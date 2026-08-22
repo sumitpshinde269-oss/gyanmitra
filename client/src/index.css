@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-slate-800 bg-amber-50/20 font-sans;
+  }
+}
+
+/* Custom scrollbars and transition micro-animations */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-amber-200/80 rounded-full hover:bg-amber-300;
+}
+
+/* Responsive container safety */
+.pb-safe {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+}
