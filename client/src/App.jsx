@@ -13,8 +13,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (loading) {
     return (
-      <div class="min-h-screen flex items-center justify-center bg-amber-50/20">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50/20">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
@@ -36,27 +36,27 @@ const AppLayout = ({ children }) => {
   const { user, logout } = useAuth();
 
   return (
-    <div class="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50/40">
       {/* Top Header Navigation */}
-      <header class="bg-gradient-to-r from-amber-500 to-amber-600 shadow-md text-white border-b border-amber-700/20 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-          <Link to="/" class="flex items-center space-x-2">
-            <span class="text-2xl font-bold tracking-wide flex items-center">
-              📙 GyanMitra
+      <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm text-slate-800 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+          <Link to="/" className="flex items-center space-x-2">
+            <span className="text-xl font-bold tracking-tight text-indigo-600 hover:text-indigo-700 transition-colors">
+              GyanMitra
             </span>
           </Link>
 
           {user && (
-            <div class="flex items-center space-x-4">
-              <div class="hidden sm:block text-right">
-                <p class="text-sm font-semibold leading-tight">{user.name}</p>
-                <p class="text-xs text-amber-100 capitalize">
-                  {user.role === 'coordinator' ? 'Coordinator' : user.role === 'school_admin' ? 'School Admin' : user.role} • {user.schoolName}
+            <div className="flex items-center space-x-4">
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-semibold leading-tight text-slate-700">{user.name}</p>
+                <p className="text-[10px] text-slate-400 capitalize mt-0.5">
+                  {user.role === 'coordinator' ? 'Coordinator' : user.role === 'school_admin' ? 'School Admin' : user.role} &bull; {user.schoolName}
                 </p>
               </div>
               <button
                 onClick={logout}
-                class="bg-amber-700/40 hover:bg-amber-700/70 transition px-3 py-1.5 rounded-lg text-xs font-semibold border border-amber-400/20"
+                className="bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-700 transition px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200"
               >
                 Logout
               </button>
@@ -66,15 +66,15 @@ const AppLayout = ({ children }) => {
       </header>
 
       {/* Main Content Area */}
-      <main class="flex-grow max-w-6xl w-full mx-auto p-4 sm:p-6 pb-20">
+      <main className="flex-grow max-w-6xl w-full mx-auto p-4 sm:p-6 pb-20 animate-fade-in">
         {children}
       </main>
 
       {/* Bottom Footer Accent */}
-      <footer class="bg-slate-100 border-t border-slate-200 py-3 text-center text-xs text-slate-500">
-        <div class="flex justify-center space-x-2 items-center">
-          <span>🇮🇳 Peer-Tutoring Portal</span>
-          <span>•</span>
+      <footer className="bg-white border-t border-slate-100 py-4 text-center text-xs text-slate-400">
+        <div className="flex justify-center space-x-2 items-center">
+          <span>Peer-Tutoring Portal</span>
+          <span>&bull;</span>
           <span>Made for Village Schools</span>
         </div>
       </footer>
@@ -88,8 +88,8 @@ const HomeRedirect = () => {
 
   if (loading) {
     return (
-      <div class="min-h-screen flex items-center justify-center bg-amber-50/20">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50/20">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
@@ -172,3 +172,4 @@ function App() {
 }
 
 export default App;
+

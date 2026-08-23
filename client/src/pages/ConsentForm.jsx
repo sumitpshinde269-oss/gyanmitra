@@ -92,7 +92,7 @@ function ConsentForm() {
       });
       setConsentStatus(res.data);
       setSigned(true);
-      setMessage('Consent form signed successfully! Dynamic redirection activated.');
+      setMessage('Consent form signed successfully! Redirection activated.');
       setTimeout(() => {
         navigate('/check-in');
       }, 1500);
@@ -105,22 +105,22 @@ function ConsentForm() {
 
   if (loading) {
     return (
-      <div class="flex items-center justify-center min-h-[50vh]">
-        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-500"></div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
 
   return (
-    <div class="max-w-md mx-auto space-y-4">
+    <div className="max-w-md mx-auto space-y-4 animate-fade-in">
       {/* Selector */}
       {students.length > 1 && (
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-amber-100">
-          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Child / बच्चा चुनें</label>
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200/60">
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Select Child / बच्चा चुनें</label>
           <select
             value={selectedStudent?._id || ''}
             onChange={handleStudentChange}
-            class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             {students.map(s => (
               <option key={s._id} value={s._id}>{s.name} (Grade {s.grade})</option>
@@ -130,89 +130,88 @@ function ConsentForm() {
       )}
 
       {students.length === 0 ? (
-        <div class="bg-white rounded-xl p-8 shadow border border-slate-100 text-center">
-          <p class="text-slate-500">No children linked to your parent account.</p>
+        <div className="bg-white rounded-xl p-8 shadow border border-slate-200/60 text-center">
+          <p className="text-slate-500 text-sm">No children linked to your parent account.</p>
         </div>
       ) : (
-        <div class="bg-white rounded-2xl shadow-md border border-amber-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 overflow-hidden animate-scale-in">
           {/* Header */}
-          <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-4 text-white">
-            <h2 class="text-lg font-bold">📄 Consent Form / सहमति पत्र</h2>
-            <p class="text-xs text-amber-100">Student: {selectedStudent.name} (Grade {selectedStudent.grade})</p>
+          <div className="bg-indigo-600 p-4 text-white">
+            <h2 className="text-base font-bold">Consent Form / सहमति पत्र</h2>
+            <p className="text-xs text-indigo-100 mt-0.5">Student: {selectedStudent.name} (Grade {selectedStudent.grade})</p>
           </div>
 
-          <div class="p-5 sm:p-6 space-y-5">
+          <div className="p-5 sm:p-6 space-y-5">
             {message && (
-              <div class={`p-3 rounded-lg text-sm border ${signed ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+              <div className={`p-3 rounded-lg text-sm border ${signed ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
                 {message}
               </div>
             )}
 
             {signed ? (
-              <div class="text-center py-6 space-y-3">
-                <div class="text-4xl">✅</div>
-                <h3 class="text-lg font-bold text-emerald-800">Consent Signed / सहमति दी गई है</h3>
-                <p class="text-sm text-slate-500 max-w-xs mx-auto">
+              <div className="text-center py-6 space-y-3">
+                <h3 className="text-lg font-bold text-emerald-800">Consent Signed / सहमति दी गई है</h3>
+                <p className="text-sm text-slate-500 max-w-xs mx-auto">
                   You have already signed the consent form for <strong>{selectedStudent.name}</strong>. You can perform weekly check-ins.
                 </p>
                 <button
                   onClick={() => navigate('/check-in')}
-                  class="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-5 rounded-lg text-sm transition"
+                  className="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-5 rounded-lg text-sm shadow-sm transition"
                 >
                   Go to Weekend Check-in
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} class="space-y-4">
-                <div class="text-xs text-slate-500 leading-relaxed bg-amber-50/50 p-3 rounded-lg border border-amber-100">
-                  ⚠️ <strong>Parents:</strong> Please read and check the following points to allow your child to participate in GyanMitra.
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-200/60">
+                  <strong>Parents:</strong> Please read and check the following points to allow your child to participate in GyanMitra.
                 </div>
 
                 {/* Consent Items */}
-                <div class="space-y-3">
-                  <label class="flex items-start space-x-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                <div className="space-y-3">
+                  <label className="flex items-start space-x-3 p-2 hover:bg-slate-50/80 rounded-lg cursor-pointer transition">
                     <input
                       type="checkbox"
                       checked={terms.acceptTutoring}
                       onChange={(e) => setTerms({ ...terms, acceptTutoring: e.target.checked })}
-                      class="mt-1 h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                      className="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <div class="text-xs sm:text-sm">
-                      <p class="font-semibold text-slate-800">Tutoring Participation</p>
-                      <p class="text-slate-500 text-xs">I allow my child to study with senior tutors. / मैं अपने बच्चे को ट्यूशन सत्र में भाग लेने की अनुमति देता हूँ।</p>
+                    <div className="text-xs sm:text-sm">
+                      <p className="font-semibold text-slate-700">Tutoring Participation</p>
+                      <p className="text-slate-500 text-xs">I allow my child to study with senior tutors. / मैं अपने बच्चे को ट्यूशन सत्र में भाग लेने की अनुमति देता हूँ।</p>
                     </div>
                   </label>
 
-                  <label class="flex items-start space-x-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                  <label className="flex items-start space-x-3 p-2 hover:bg-slate-50/80 rounded-lg cursor-pointer transition">
                     <input
                       type="checkbox"
                       checked={terms.weeklyCheckin}
                       onChange={(e) => setTerms({ ...terms, weeklyCheckin: e.target.checked })}
-                      class="mt-1 h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                      className="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <div class="text-xs sm:text-sm">
-                      <p class="font-semibold text-slate-800">Weekly Weekend Check-ins</p>
-                      <p class="text-slate-500 text-xs">I agree to sit with my child on weekends for a 5-minute quiz check. / मैं सप्ताहांत पर बच्चे के साथ बैठकर 5 मिनट का क्विज़ पूरा करने के लिए सहमत हूँ।</p>
+                    <div className="text-xs sm:text-sm">
+                      <p className="font-semibold text-slate-700">Weekly Weekend Check-ins</p>
+                      <p className="text-slate-500 text-xs">I agree to sit with my child on weekends for a 5-minute quiz check. / मैं सप्ताहांत पर बच्चे के साथ बैठकर 5 मिनट का क्विज़ पूरा करने के लिए सहमत हूँ।</p>
                     </div>
                   </label>
 
-                  <label class="flex items-start space-x-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                  <label className="flex items-start space-x-3 p-2 hover:bg-slate-50/80 rounded-lg cursor-pointer transition">
                     <input
                       type="checkbox"
                       checked={terms.shareData}
                       onChange={(e) => setTerms({ ...terms, shareData: e.target.checked })}
-                      class="mt-1 h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                      className="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <div class="text-xs sm:text-sm">
-                      <p class="font-semibold text-slate-800">Learning Progress Sharing</p>
-                      <p class="text-slate-500 text-xs">I authorize sharing progress metrics with school coordinators. / मैं स्कूल समन्वयक के साथ सीखने के स्तर साझा करने की अनुमति देता हूँ।</p>
+                    <div className="text-xs sm:text-sm">
+                      <p className="font-semibold text-slate-700">Learning Progress Sharing</p>
+                      <p className="text-slate-500 text-xs">I authorize sharing progress metrics with school coordinators. / मैं स्कूल समन्वयक के साथ सीखने के स्तर साझा करने की अनुमति देता हूँ।</p>
                     </div>
                   </label>
                 </div>
 
                 {/* Signature input */}
-                <div class="border-t border-slate-100 pt-4">
-                  <label class="block text-xs font-bold text-slate-500 uppercase mb-1">
+                <div className="border-t border-slate-100 pt-4">
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
                     Parent Signature / अभिभावक के हस्ताक्षर
                   </label>
                   <input
@@ -220,11 +219,28 @@ function ConsentForm() {
                     value={signature}
                     onChange={(e) => setSignature(e.target.value)}
                     placeholder="Type your full name (ई-हस्ताक्षर हेतु अपना नाम लिखें)"
-                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
                   />
                 </div>
 
                 <button
+                  type="submit"
+                  disabled={saving}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg text-sm shadow transition disabled:opacity-50"
+                >
+                  {saving ? 'Signing...' : 'Sign & Submit Consent / सहमति दर्ज करें'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default ConsentForm;
+on
                   type="submit"
                   disabled={saving}
                   class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg text-sm shadow transition disabled:opacity-50"
