@@ -110,8 +110,8 @@ function CoordinatorDashboard() {
 
   if (loading) {
     return (
-      <div class="flex items-center justify-center min-h-[50vh]">
-        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-500"></div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-slate-900 border-t-transparent"></div>
       </div>
     );
   }
@@ -126,37 +126,39 @@ function CoordinatorDashboard() {
   ];
 
   return (
-    <div class="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Page Header */}
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-2xl shadow-sm border border-amber-100 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded border border-slate-200 gap-4">
         <div>
-          <h1 class="text-xl font-bold text-slate-800">🏫 Coordinator Dashboard</h1>
-          <p class="text-xs text-slate-500">Monitor village student tutoring, levels and weekend check-ins</p>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 uppercase">Coordinator Dashboard</h1>
+          <p className="text-xs text-slate-405 mt-1">Monitor student tutoring progress, levels, and parent check-ins</p>
         </div>
         <button
           onClick={() => setShowAddStudent(true)}
-          class="bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm px-4 py-2 rounded-lg shadow transition"
+          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs uppercase tracking-wider px-5 py-3 rounded transition shadow-sm"
         >
-          ➕ Register New Student
+          Register New Student
         </button>
       </div>
 
       {/* Tabs */}
-      <div class="flex border-b border-slate-200 overflow-x-auto gap-2">
-        {['overview', 'students', 'tutorLogs', 'checkins'].map((tab) => (
+      <div className="flex border-b border-slate-200 overflow-x-auto gap-4">
+        {[
+          { id: 'overview', label: 'Stats & Progress' },
+          { id: 'students', label: 'Students Roster' },
+          { id: 'tutorLogs', label: 'Tutor Feedbacks' },
+          { id: 'checkins', label: 'Weekend Check-ins' }
+        ].map((t) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            class={`px-4 py-2.5 font-semibold text-sm border-b-2 whitespace-nowrap transition ${
-              activeTab === tab
-                ? 'border-amber-500 text-amber-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`px-4 py-3 font-semibold text-xs uppercase tracking-wider border-b-2 whitespace-nowrap transition ${
+              activeTab === t.id
+                ? 'border-slate-900 text-slate-900'
+                : 'border-transparent text-slate-400 hover:text-slate-600'
             }`}
           >
-            {tab === 'overview' && '📊 Stats & Progress'}
-            {tab === 'students' && '🎓 Students Roster'}
-            {tab === 'tutorLogs' && '✍️ Tutor Feedbacks'}
-            {tab === 'checkins' && '👨‍👩‍👦 Weekend Check-ins'}
+            {t.label}
           </button>
         ))}
       </div>
@@ -165,44 +167,44 @@ function CoordinatorDashboard() {
 
       {/* Tab: OVERVIEW */}
       {activeTab === 'overview' && (
-        <div class="space-y-6">
+        <div className="space-y-8">
           {/* Key Stat Cards */}
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center">
-              <p class="text-slate-400 text-xs font-semibold uppercase">Students Registered</p>
-              <p class="text-3xl font-extrabold text-amber-500 mt-1">{stats?.counts?.students || 0}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+            <div className="bg-white p-6 rounded border border-slate-200 text-center shadow-sm">
+              <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-wider">Students Registered</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">{stats?.counts?.students || 0}</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center">
-              <p class="text-slate-400 text-xs font-semibold uppercase">Active Tutors</p>
-              <p class="text-3xl font-extrabold text-teal-500 mt-1">{stats?.counts?.tutors || 0}</p>
+            <div className="bg-white p-6 rounded border border-slate-200 text-center shadow-sm">
+              <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-wider">Active Tutors</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">{stats?.counts?.tutors || 0}</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center">
-              <p class="text-slate-400 text-xs font-semibold uppercase">Weekly Logs Submitted</p>
-              <p class="text-3xl font-extrabold text-emerald-500 mt-1">{stats?.counts?.sessions || 0}</p>
+            <div className="bg-white p-6 rounded border border-slate-200 text-center shadow-sm">
+              <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-wider">Weekly Logs</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">{stats?.counts?.sessions || 0}</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm text-center">
-              <p class="text-slate-400 text-xs font-semibold uppercase">Check-ins Completed</p>
-              <p class="text-3xl font-extrabold text-sky-500 mt-1">{stats?.counts?.checkins || 0}</p>
+            <div className="bg-white p-6 rounded border border-slate-200 text-center shadow-sm">
+              <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-wider">Check-ins Completed</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">{stats?.counts?.checkins || 0}</p>
             </div>
           </div>
 
           {/* Recharts Graphical Analysis */}
-          <div class="bg-white p-4 sm:p-6 rounded-2xl border border-amber-100 shadow-sm">
-            <h3 class="text-base font-bold text-slate-800 mb-4">📈 Learning Level Distribution</h3>
-            <div class="h-64 sm:h-80">
+          <div className="bg-white p-6 rounded border border-slate-200 shadow-sm">
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-6">Learning Level Distribution</h3>
+            <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Bar dataKey="Reading" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="Math" fill="#0d9488" radius={[4, 4, 0, 0]} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                  <Tooltip cursor={{ fill: '#f8fafc' }} />
+                  <Legend wrapperStyle={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }} />
+                  <Bar dataKey="Reading" fill="#1e293b" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="Math" fill="#64748b" radius={[2, 2, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <p class="text-[10px] text-slate-400 text-center mt-2">
+            <p className="text-[10px] text-slate-400 text-center mt-4">
               Note: ASER Level equivalents range from Beginner up to Story (Reading) and Division (Math).
             </p>
           </div>
@@ -211,65 +213,65 @@ function CoordinatorDashboard() {
 
       {/* Tab: STUDENTS */}
       {activeTab === 'students' && (
-        <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm border-collapse">
+        <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs font-bold uppercase">
-                  <th class="p-3">Student Name</th>
-                  <th class="p-3">Grade</th>
-                  <th class="p-3">Assigned Tutor</th>
-                  <th class="p-3">Assigned Parent</th>
-                  <th class="p-3 text-center">Reading Level</th>
-                  <th class="p-3 text-center">Math Level</th>
-                  <th class="p-3 text-right">Actions</th>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                  <th className="p-4">Student Name</th>
+                  <th className="p-4">Grade</th>
+                  <th className="p-4">Assigned Tutor</th>
+                  <th className="p-4">Assigned Parent</th>
+                  <th className="p-4 text-center">Reading Level</th>
+                  <th className="p-4 text-center">Math Level</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-200">
                 {students.map((student) => (
-                  <tr key={student._id} class="hover:bg-slate-50/50">
-                    <td class="p-3 font-semibold text-slate-800">{student.name}</td>
-                    <td class="p-3 text-slate-500 text-xs font-medium">Grade {student.grade}</td>
-                    <td class="p-3">
+                  <tr key={student._id} className="hover:bg-slate-50/50">
+                    <td className="p-4 font-semibold text-slate-900 text-sm">{student.name}</td>
+                    <td className="p-4 text-slate-400 font-medium">Grade {student.grade}</td>
+                    <td className="p-4">
                       {student.tutorId ? (
-                        <span class="text-teal-700 bg-teal-50 px-2 py-0.5 rounded text-xs font-semibold">
-                          👤 {student.tutorId.name || student.tutorId}
+                        <span className="border border-slate-200 text-slate-700 px-2.5 py-1 rounded text-[10px] font-semibold bg-slate-50 uppercase tracking-wider">
+                          {student.tutorId.name || student.tutorId}
                         </span>
                       ) : (
-                        <span class="text-slate-400 text-xs italic">Unassigned</span>
+                        <span className="text-slate-350 italic">Unassigned</span>
                       )}
                     </td>
-                    <td class="p-3">
+                    <td className="p-4">
                       {student.parentId ? (
-                        <span class="text-sky-700 bg-sky-50 px-2 py-0.5 rounded text-xs font-semibold">
-                          🏡 {student.parentId.name || student.parentId}
+                        <span className="border border-slate-200 text-slate-700 px-2.5 py-1 rounded text-[10px] font-semibold bg-slate-50 uppercase tracking-wider">
+                          {student.parentId.name || student.parentId}
                         </span>
                       ) : (
-                        <span class="text-slate-400 text-xs italic">Unassigned</span>
+                        <span className="text-slate-350 italic">Unassigned</span>
                       )}
                     </td>
-                    <td class="p-3 text-center">
-                      <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-bold">
+                    <td className="p-4 text-center">
+                      <span className="border border-slate-200 bg-white text-slate-800 px-2.5 py-1 rounded text-[10px] font-bold uppercase">
                         {student.learningLevel?.reading || 'Beginner'}
                       </span>
                     </td>
-                    <td class="p-3 text-center">
-                      <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs font-bold">
+                    <td className="p-4 text-center">
+                      <span className="border border-slate-200 bg-white text-slate-800 px-2.5 py-1 rounded text-[10px] font-bold uppercase">
                         {student.learningLevel?.math || 'Beginner'}
                       </span>
                     </td>
-                    <td class="p-3 text-right space-x-2 whitespace-nowrap">
+                    <td className="p-4 text-right space-x-2 whitespace-nowrap">
                       <button
                         onClick={() => handleOpenAssign(student)}
-                        class="text-xs bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 text-slate-600 px-2 py-1 rounded transition"
+                        className="text-[10px] uppercase font-bold tracking-wider bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3 py-2 rounded transition"
                       >
-                        🔗 Assign
+                        Assign
                       </button>
                       <button
                         onClick={() => handleOpenEditLevels(student)}
-                        class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded transition shadow-sm font-medium"
+                        className="text-[10px] uppercase font-bold tracking-wider bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 rounded transition shadow-sm"
                       >
-                        📶 Levels
+                        Levels
                       </button>
                     </td>
                   </tr>
@@ -282,39 +284,37 @@ function CoordinatorDashboard() {
 
       {/* Tab: TUTOR LOGS */}
       {activeTab === 'tutorLogs' && (
-        <div class="space-y-4">
+        <div className="space-y-6">
           {logs.length === 0 ? (
-            <div class="bg-white p-8 text-center text-slate-500 rounded-xl border border-slate-100 shadow-sm">
+            <div className="bg-white p-8 text-center text-slate-500 rounded border border-slate-200">
               No session logs submitted yet.
             </div>
           ) : (
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {logs.map((log) => (
-                <div key={log._id} class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-2">
-                  <div class="flex justify-between items-start">
+                <div key={log._id} className="bg-white p-5 rounded border border-slate-200 space-y-4 shadow-sm">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <h4 class="font-bold text-slate-800">{log.studentId?.name || 'Unknown Student'}</h4>
-                      <p class="text-xs text-slate-500">
-                        Tutored by: <strong class="text-teal-600">{log.tutorId?.name || 'Unknown Tutor'}</strong>
+                      <h4 className="font-semibold text-slate-900 text-sm">{log.studentId?.name || 'Unknown Student'}</h4>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Tutored by: <strong className="text-slate-700 font-medium">{log.tutorId?.name || 'Unknown Tutor'}</strong>
                       </p>
                     </div>
-                    <span class={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${
-                      log.subject === 'reading' ? 'bg-amber-100 text-amber-800' : 'bg-teal-100 text-teal-800'
-                    }`}>
+                    <span className="border border-slate-200 bg-white text-slate-700 px-2 py-0.5 rounded text-[9px] uppercase font-bold tracking-wider">
                       {log.subject}
                     </span>
                   </div>
-                  <div class="grid grid-cols-2 text-xs text-slate-500 bg-slate-50 p-2 rounded gap-1">
-                    <p>📅 Date: {new Date(log.date).toLocaleDateString()}</p>
-                    <p>⏱️ Duration: {log.duration} mins</p>
+                  <div className="grid grid-cols-2 text-xs text-slate-500 bg-slate-50 p-3 rounded border border-slate-100 gap-2">
+                    <p>Date: {new Date(log.date).toLocaleDateString()}</p>
+                    <p>Duration: {log.duration} mins</p>
                   </div>
-                  <div class="text-xs space-y-1">
-                    <p class="font-semibold text-slate-700">Topics Covered:</p>
-                    <p class="text-slate-600 bg-amber-50/20 p-2 rounded border border-amber-100/30">{log.topicsCovered || 'N/A'}</p>
+                  <div className="text-xs space-y-1">
+                    <p className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Topics Covered:</p>
+                    <p className="text-slate-650 bg-slate-50/50 p-3 rounded border border-slate-200/50 leading-relaxed">{log.topicsCovered || 'N/A'}</p>
                   </div>
-                  <div class="text-xs space-y-1">
-                    <p class="font-semibold text-slate-700">Tutor Observations:</p>
-                    <p class="text-slate-600 italic bg-amber-50/20 p-2 rounded border border-amber-100/30">"{log.observations || 'None'}"</p>
+                  <div className="text-xs space-y-1">
+                    <p className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Tutor Observations:</p>
+                    <p className="text-slate-650 italic bg-slate-50/50 p-3 rounded border border-slate-200/50 leading-relaxed">"{log.observations || 'None'}"</p>
                   </div>
                 </div>
               ))}
@@ -325,44 +325,40 @@ function CoordinatorDashboard() {
 
       {/* Tab: PARENT CHECK-INS */}
       {activeTab === 'checkins' && (
-        <div class="space-y-4">
+        <div className="space-y-6">
           {checkins.length === 0 ? (
-            <div class="bg-white p-8 text-center text-slate-500 rounded-xl border border-slate-100 shadow-sm">
+            <div className="bg-white p-8 text-center text-slate-500 rounded border border-slate-200">
               No weekend check-ins completed yet.
             </div>
           ) : (
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {checkins.map((checkin) => (
-                <div key={checkin._id} class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                  <div class="flex justify-between items-start">
+                <div key={checkin._id} className="bg-white p-5 rounded border border-slate-200 space-y-4 shadow-sm">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <h4 class="font-bold text-slate-800">{checkin.studentId?.name || 'Unknown Student'}</h4>
-                      <p class="text-xs text-slate-500">
-                        Parent: <strong class="text-sky-600">{checkin.parentId?.name || 'Unknown Parent'}</strong>
+                      <h4 className="font-semibold text-slate-900 text-sm">{checkin.studentId?.name || 'Unknown Student'}</h4>
+                      <p className="text-xs text-slate-405 mt-1">
+                        Parent: <strong className="text-slate-700 font-medium">{checkin.parentId?.name || 'Unknown Parent'}</strong>
                       </p>
                     </div>
-                    <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                      ✓ Completed
+                    <span className="border border-slate-200 bg-white text-slate-500 px-2 py-0.5 rounded text-[9px] uppercase font-semibold">
+                      Completed
                     </span>
                   </div>
-                  <div class="flex justify-between bg-slate-50 p-2 rounded text-xs">
-                    <span class="capitalize">📚 Subject Quiz: <strong>{checkin.quizResults?.subject}</strong></span>
-                    <span>🎯 Score: <strong class="text-amber-600">{checkin.quizResults?.score}/{checkin.quizResults?.total}</strong></span>
+                  <div className="flex justify-between bg-slate-50 p-3 rounded border border-slate-100 text-xs">
+                    <span className="capitalize font-medium text-slate-600">Subject Quiz: {checkin.quizResults?.subject}</span>
+                    <span className="font-semibold text-slate-900">Score: {checkin.quizResults?.score}/{checkin.quizResults?.total}</span>
                   </div>
-                  <div class="text-xs space-y-1">
-                    <div class="flex items-center space-x-1">
-                      <span class="font-semibold text-slate-700">Parent Confidence:</span>
-                      <span class="text-amber-500">
-                        {'★'.repeat(checkin.parentFeedback?.confidence || 0)}
-                        {'☆'.repeat(5 - (checkin.parentFeedback?.confidence || 0))}
-                      </span>
+                  <div className="text-xs space-y-2">
+                    <div className="text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                      Parent Confidence: {checkin.parentFeedback?.confidence}/5
                     </div>
-                    <p class="text-slate-600 bg-amber-50/20 p-2 rounded border border-amber-100/30">
-                      "{checkin.parentFeedback?.comments || 'No comment written'}"
+                    <p className="text-slate-600 bg-slate-50/50 p-3 rounded border border-slate-200/50 leading-relaxed">
+                      "{checkin.parentFeedback?.comments || 'No comments'}"
                     </p>
                   </div>
-                  <p class="text-[10px] text-slate-400 text-right">
-                    Submitted: {new Date(checkin.createdAt).toLocaleString()}
+                  <p className="text-[10px] text-slate-400 text-right uppercase tracking-wider font-semibold">
+                    Submitted: {new Date(checkin.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               ))}
@@ -375,49 +371,49 @@ function CoordinatorDashboard() {
           MODAL: Add Student
          ======================================================== */}
       {showAddStudent && (
-        <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div class="bg-white rounded-2xl w-full max-w-sm shadow-xl overflow-hidden border border-amber-100">
-            <div class="bg-amber-500 p-4 text-white font-bold flex justify-between items-center">
+        <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded border border-slate-200 w-full max-w-sm shadow-xl overflow-hidden">
+            <div className="border-b border-slate-200 p-5 font-bold text-slate-900 uppercase tracking-wider text-xs flex justify-between items-center">
               <span>Register Student</span>
-              <button onClick={() => setShowAddStudent(false)} class="hover:text-amber-100 text-lg">×</button>
+              <button onClick={() => setShowAddStudent(false)} className="hover:text-slate-500 text-base font-semibold">Cancel</button>
             </div>
-            <form onSubmit={handleAddStudent} class="p-5 space-y-4">
+            <form onSubmit={handleAddStudent} className="p-6 space-y-5">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Student Name</label>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Student Name</label>
                 <input
                   type="text"
                   required
                   value={newStudentName}
                   onChange={(e) => setNewStudentName(e.target.value)}
                   placeholder="e.g. Ramesh Kumar"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
                 />
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Grade (3rd to 8th)</label>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Grade (3rd to 8th)</label>
                 <select
                   value={newStudentGrade}
                   onChange={(e) => setNewStudentGrade(e.target.value)}
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
                 >
                   {[3, 4, 5, 6, 7, 8].map(g => (
                     <option key={g} value={g}>Grade {g}</option>
                   ))}
                 </select>
               </div>
-              <div class="flex space-x-2 pt-2">
+              <div className="flex space-x-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowAddStudent(false)}
-                  class="w-1/2 border border-slate-200 text-slate-600 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 transition"
+                  className="w-1/2 border border-slate-200 text-slate-600 py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-50 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  class="w-1/2 bg-amber-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-amber-600 shadow transition"
+                  className="w-1/2 bg-slate-900 text-white py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-800 shadow transition"
                 >
-                  Create Student
+                  Create
                 </button>
               </div>
             </form>
@@ -429,19 +425,19 @@ function CoordinatorDashboard() {
           MODAL: Assign Tutor and Parent
          ======================================================== */}
       {assignStudentId && (
-        <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div class="bg-white rounded-2xl w-full max-w-sm shadow-xl overflow-hidden border border-amber-100">
-            <div class="bg-amber-500 p-4 text-white font-bold flex justify-between items-center">
+        <div className="fixed inset-0 bg-slate-955/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded border border-slate-200 w-full max-w-sm shadow-xl overflow-hidden">
+            <div className="border-b border-slate-200 p-5 font-bold text-slate-900 uppercase tracking-wider text-xs flex justify-between items-center">
               <span>Assign Tutor & Parent</span>
-              <button onClick={() => setAssignStudentId(null)} class="hover:text-amber-100 text-lg">×</button>
+              <button onClick={() => setAssignStudentId(null)} className="hover:text-slate-500 text-base font-semibold">Cancel</button>
             </div>
-            <div class="p-5 space-y-4">
+            <div className="p-6 space-y-5">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Select Senior Tutor</label>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Senior Tutor</label>
                 <select
                   value={assignTutorId}
                   onChange={(e) => setAssignTutorId(e.target.value)}
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
                 >
                   <option value="">-- No Tutor --</option>
                   {tutors.map(t => (
@@ -450,11 +446,11 @@ function CoordinatorDashboard() {
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Select Parent</label>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Parent</label>
                 <select
                   value={assignParentId}
                   onChange={(e) => setAssignParentId(e.target.value)}
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
                 >
                   <option value="">-- No Parent --</option>
                   {parents.map(p => (
@@ -462,18 +458,18 @@ function CoordinatorDashboard() {
                   ))}
                 </select>
               </div>
-              <div class="flex space-x-2 pt-2">
+              <div className="flex space-x-3 pt-2">
                 <button
                   onClick={() => setAssignStudentId(null)}
-                  class="w-1/2 border border-slate-200 text-slate-600 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 transition"
+                  className="w-1/2 border border-slate-200 text-slate-600 py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-50 transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAssign}
-                  class="w-1/2 bg-amber-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-amber-600 shadow transition"
+                  className="w-1/2 bg-slate-900 text-white py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-800 shadow transition"
                 >
-                  Save Assignment
+                  Save
                 </button>
               </div>
             </div>
@@ -485,19 +481,19 @@ function CoordinatorDashboard() {
           MODAL: Update Learning Levels
          ======================================================== */}
       {editLevelStudentId && (
-        <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div class="bg-white rounded-2xl w-full max-w-sm shadow-xl overflow-hidden border border-amber-100">
-            <div class="bg-amber-500 p-4 text-white font-bold flex justify-between items-center">
+        <div className="fixed inset-0 bg-slate-955/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded border border-slate-200 w-full max-w-sm shadow-xl overflow-hidden">
+            <div className="border-b border-slate-200 p-5 font-bold text-slate-900 uppercase tracking-wider text-xs flex justify-between items-center">
               <span>Set Learning Levels</span>
-              <button onClick={() => setEditLevelStudentId(null)} class="hover:text-amber-100 text-lg">×</button>
+              <button onClick={() => setEditLevelStudentId(null)} className="hover:text-slate-500 text-base font-semibold">Cancel</button>
             </div>
-            <div class="p-5 space-y-4">
+            <div className="p-6 space-y-5">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Reading ASER Level</label>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Reading ASER Level</label>
                 <select
                   value={editReadingLevel}
                   onChange={(e) => setEditReadingLevel(e.target.value)}
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
                 >
                   {['Beginner', 'Letter', 'Word', 'Paragraph', 'Story'].map(lvl => (
                     <option key={lvl} value={lvl}>{lvl}</option>
@@ -505,29 +501,29 @@ function CoordinatorDashboard() {
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Math ASER Level</label>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Math ASER Level</label>
                 <select
                   value={editMathLevel}
                   onChange={(e) => setEditMathLevel(e.target.value)}
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
                 >
                   {['Beginner', 'Number', 'Addition', 'Subtraction', 'Division'].map(lvl => (
                     <option key={lvl} value={lvl}>{lvl}</option>
                   ))}
                 </select>
               </div>
-              <div class="flex space-x-2 pt-2">
+              <div className="flex space-x-3 pt-2">
                 <button
                   onClick={() => setEditLevelStudentId(null)}
-                  class="w-1/2 border border-slate-200 text-slate-600 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 transition"
+                  className="w-1/2 border border-slate-200 text-slate-650 py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-50 transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleUpdateLevels}
-                  class="w-1/2 bg-amber-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-amber-600 shadow transition"
+                  className="w-1/2 bg-slate-900 text-white py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-800 shadow transition"
                 >
-                  Update Levels
+                  Update
                 </button>
               </div>
             </div>

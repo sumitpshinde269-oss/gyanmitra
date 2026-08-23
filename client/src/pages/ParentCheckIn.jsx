@@ -182,31 +182,29 @@ function ParentCheckIn() {
       setSubmitting(false);
     }
   };
-
   if (loading) {
     return (
-      <div class="flex items-center justify-center min-h-[50vh]">
-        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-500"></div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-slate-900 border-t-transparent"></div>
       </div>
     );
   }
 
-  // Level Progression maps for styled progress meters
   const levelProgressMap = {
     reading: { Beginner: 10, Letter: 35, Word: 60, Paragraph: 80, Story: 100 },
     math: { Beginner: 10, Number: 35, Addition: 60, Subtraction: 80, Division: 100 }
   };
 
   return (
-    <div class="max-w-md mx-auto space-y-4">
+    <div className="max-w-md mx-auto space-y-6 animate-fade-in">
       {/* Student Selector */}
       {students.length > 0 && (
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-amber-100">
-          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Child / बच्चा चुनें</label>
+        <div className="bg-white rounded border border-slate-200 p-5 shadow-sm">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Child / बच्चा चुनें</label>
           <select
             value={selectedStudent?._id || ''}
             onChange={handleStudentSelect}
-            class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full bg-white border border-slate-200 rounded p-3 text-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
           >
             {students.map(s => (
               <option key={s._id} value={s._id}>{s.name} (Grade {s.grade})</option>
@@ -216,145 +214,144 @@ function ParentCheckIn() {
       )}
 
       {students.length === 0 ? (
-        <div class="bg-white rounded-xl p-8 shadow border border-slate-100 text-center">
-          <p class="text-slate-500">No children linked to your parent account.</p>
+        <div className="bg-white rounded border border-slate-200 p-8 text-center">
+          <p className="text-slate-500 text-sm">No children linked to your parent account.</p>
         </div>
       ) : !consentStatus?.signed ? (
         /* Redirection prompt to sign Consent first */
-        <div class="bg-white rounded-2xl p-6 shadow-md border border-red-200 text-center space-y-4">
-          <span class="text-5xl">📄</span>
-          <h3 class="text-lg font-bold text-red-800">Consent Form Required</h3>
-          <p class="text-sm text-slate-600 leading-relaxed">
-            You must sign the digital consent checklist for <strong>{selectedStudent.name}</strong> before logging weekend checks.
+        <div className="bg-white rounded border border-slate-200 p-6 text-center space-y-5 shadow-sm">
+          <h3 className="text-base font-bold text-slate-900 uppercase tracking-wider">Consent Form Required</h3>
+          <p className="text-xs text-slate-500 leading-relaxed max-w-xs mx-auto">
+            You must sign the digital consent checklist for <strong>{selectedStudent.name}</strong> before logging weekend check-ins.
           </p>
           <button
             onClick={() => navigate('/consent', { state: { studentId: selectedStudent._id } })}
-            class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg transition"
+            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded text-xs uppercase tracking-wider transition"
           >
             Go to Consent Form
           </button>
         </div>
       ) : (
         /* Parent Check-In Panel */
-        <div class="space-y-4">
+        <div className="space-y-6">
           {/* Main Card */}
-          <div class="bg-white rounded-2xl shadow-md border border-amber-100 overflow-hidden">
+          <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden">
             {/* Header */}
-            <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-4 text-white flex justify-between items-center">
+            <div className="border-b border-slate-200 p-6 flex justify-between items-center">
               <div>
-                <h2 class="text-lg font-bold">👨‍👩‍👦 Weekend Check-in</h2>
-                <p class="text-xs text-amber-100">Sit with your child for a quick check</p>
+                <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider">Weekend Check-in</h2>
+                <p className="text-xs text-slate-400 mt-1">Sit with your child for a quick check</p>
               </div>
-              <span class="bg-emerald-500/30 text-emerald-100 text-xs px-2 py-0.5 rounded font-bold border border-emerald-500/20">
+              <span className="border border-slate-200 text-slate-500 text-[10px] px-2.5 py-1 rounded font-semibold uppercase tracking-wider bg-slate-50">
                 Consent Active
               </span>
             </div>
 
-            <div class="p-5">
+            <div className="p-6">
               {!isCheckingIn ? (
                 /* Landing screen */
-                <div class="space-y-5">
+                <div className="space-y-6">
                   {/* Current Learning Levels */}
-                  <div class="space-y-3">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Current Learning Levels</h3>
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Learning Levels</h3>
                     
                     {/* Reading Level bar */}
-                    <div class="space-y-1">
-                      <div class="flex justify-between text-xs font-semibold">
-                        <span class="text-slate-600">Reading: 📖 <strong>{selectedStudent.learningLevel?.reading || 'Beginner'}</strong></span>
-                        <span class="text-amber-600">{levelProgressMap.reading[selectedStudent.learningLevel?.reading || 'Beginner']}%</span>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs font-medium">
+                        <span className="text-slate-700">Reading: <strong>{selectedStudent.learningLevel?.reading || 'Beginner'}</strong></span>
+                        <span className="text-slate-400">{levelProgressMap.reading[selectedStudent.learningLevel?.reading || 'Beginner']}%</span>
                       </div>
-                      <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                         <div
                           style={{ width: `${levelProgressMap.reading[selectedStudent.learningLevel?.reading || 'Beginner']}%` }}
-                          class="h-full bg-amber-500 rounded-full"
+                          className="h-full bg-slate-900 rounded-full"
                         ></div>
                       </div>
                     </div>
 
                     {/* Math Level bar */}
-                    <div class="space-y-1">
-                      <div class="flex justify-between text-xs font-semibold">
-                        <span class="text-slate-600">Math: 🧮 <strong>{selectedStudent.learningLevel?.math || 'Beginner'}</strong></span>
-                        <span class="text-teal-600">{levelProgressMap.math[selectedStudent.learningLevel?.math || 'Beginner']}%</span>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs font-medium">
+                        <span className="text-slate-700">Math: <strong>{selectedStudent.learningLevel?.math || 'Beginner'}</strong></span>
+                        <span className="text-slate-400">{levelProgressMap.math[selectedStudent.learningLevel?.math || 'Beginner']}%</span>
                       </div>
-                      <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                         <div
                           style={{ width: `${levelProgressMap.math[selectedStudent.learningLevel?.math || 'Beginner']}%` }}
-                          class="h-full bg-teal-500 rounded-full"
+                          className="h-full bg-slate-900 rounded-full"
                         ></div>
                       </div>
                     </div>
                   </div>
 
                   {/* Start Check-in Action */}
-                  <div class="border-t border-slate-100 pt-4 space-y-3">
+                  <div className="border-t border-slate-150 pt-5 space-y-4">
                     <div>
-                      <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select Check-in Subject</label>
-                      <div class="flex space-x-2">
+                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Check-in Subject</label>
+                      <div className="flex space-x-3">
                         <button
                           type="button"
                           onClick={() => setCheckinSubject('reading')}
-                          class={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold border transition ${
+                          className={`flex-1 py-3 px-4 rounded text-xs uppercase tracking-wider font-semibold border transition ${
                             checkinSubject === 'reading'
-                              ? 'bg-amber-50 border-amber-500 text-amber-900 shadow-sm'
+                              ? 'bg-slate-900 border-slate-900 text-white shadow-sm'
                               : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
                           }`}
                         >
-                          📖 Reading Check
+                          Reading Check
                         </button>
                         <button
                           type="button"
                           onClick={() => setCheckinSubject('math')}
-                          class={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold border transition ${
+                          className={`flex-1 py-3 px-4 rounded text-xs uppercase tracking-wider font-semibold border transition ${
                             checkinSubject === 'math'
-                              ? 'bg-teal-50/50 border-teal-500 text-teal-900 shadow-sm'
+                              ? 'bg-slate-900 border-slate-900 text-white shadow-sm'
                               : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
                           }`}
                         >
-                          🧮 Math Check
+                          Math Check
                         </button>
                       </div>
                     </div>
 
                     <button
                       onClick={handleStartCheckin}
-                      class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg text-sm shadow transition"
+                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded text-xs uppercase tracking-wider shadow transition"
                     >
-                      🚀 Start Weekly Quiz / क्विज़ शुरू करें
+                      Start Weekly Quiz / क्विज़ शुरू करें
                     </button>
                   </div>
                 </div>
               ) : (
                 /* Interactive Quiz Flow */
-                <div class="space-y-4">
+                <div className="space-y-6">
                   {/* Quiz Steps (Questions 1, 2, 3) */}
                   {quizStep >= 1 && quizStep <= 3 && (
-                    <div class="space-y-5 py-2">
-                      <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
-                        <span>Subject: {checkinSubject === 'reading' ? '📖 Reading' : '🧮 Math'} ({currentLevel})</span>
+                    <div className="space-y-6 py-2">
+                      <div className="flex justify-between items-center text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <span>Subject: {checkinSubject === 'reading' ? 'Reading' : 'Math'} ({currentLevel})</span>
                         <span>Question {quizStep} of 3</span>
                       </div>
 
-                      <div class="bg-amber-50/40 border border-amber-200/50 p-5 rounded-xl text-center shadow-sm space-y-4">
-                        <p class="text-xs text-slate-500 font-medium">Show the screen to your child and ask:</p>
-                        <p class="text-2xl font-extrabold text-slate-800 tracking-wide select-none">
+                      <div className="border border-slate-200 p-6 rounded text-center space-y-4">
+                        <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Show the screen to your child and ask:</p>
+                        <p className="text-2xl font-bold text-slate-900 tracking-wide select-none">
                           {questions[quizStep - 1]?.text}
                         </p>
                       </div>
 
-                      <div class="grid grid-cols-2 gap-3 pt-2">
+                      <div className="grid grid-cols-2 gap-4 pt-2">
                         <button
                           onClick={() => handleAnswer(false)}
-                          class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold py-3 rounded-xl transition text-sm"
+                          className="border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3.5 rounded text-xs uppercase tracking-wider transition"
                         >
-                          ❌ Incorrect / नहीं पढ़ पाया
+                          Incorrect / नहीं पढ़ पाया
                         </button>
                         <button
                           onClick={() => handleAnswer(true)}
-                          class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold py-3 rounded-xl transition text-sm"
+                          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded text-xs uppercase tracking-wider transition"
                         >
-                          ✅ Correct / सही पढ़ा
+                          Correct / सही पढ़ा
                         </button>
                       </div>
                     </div>
@@ -362,64 +359,67 @@ function ParentCheckIn() {
 
                   {/* Feedback Form (Step 4) */}
                   {quizStep === 4 && (
-                    <div class="space-y-4">
-                      <div class="text-center py-2">
-                        <span class="text-3xl">🎉</span>
-                        <h4 class="font-extrabold text-slate-800 mt-1">Quiz Completed!</h4>
-                        <p class="text-xs text-slate-500">Score: <strong class="text-amber-500 text-sm">{quizScore} / 3</strong></p>
+                    <div className="space-y-6">
+                      <div className="text-center py-2">
+                        <h4 className="text-base font-bold text-slate-900 uppercase tracking-wider">Quiz Completed</h4>
+                        <p className="text-xs text-slate-450 mt-1">Score: <strong className="text-slate-900 text-sm font-semibold">{quizScore} / 3</strong></p>
                       </div>
 
-                      <div class="space-y-3 pt-2 border-t border-slate-100">
+                      <div className="space-y-4 pt-4 border-t border-slate-150">
                         <div>
-                          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
                             Your Confidence Rating / आपका विश्वास
                           </label>
-                          <div class="flex space-x-2 justify-center py-2">
-                            {[1, 2, 3, 4, 5].map((star) => (
+                          <div className="flex space-x-3 justify-center py-2">
+                            {[1, 2, 3, 4, 5].map((val) => (
                               <button
-                                key={star}
+                                key={val}
                                 type="button"
-                                onClick={() => setFeedbackConfidence(star)}
-                                class="text-2xl transition duration-100 hover:scale-110"
+                                onClick={() => setFeedbackConfidence(val)}
+                                className={`w-11 h-11 rounded border font-semibold text-sm transition ${
+                                  val <= feedbackConfidence
+                                    ? 'bg-slate-900 border-slate-900 text-white'
+                                    : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                                }`}
                               >
-                                {star <= feedbackConfidence ? '★' : '☆'}
+                                {val}
                               </button>
                             ))}
                           </div>
-                          <p class="text-center text-[10px] text-slate-400 capitalize">
-                            {feedbackConfidence === 5 && 'Excellent progress / बहुत बढ़िया'}
-                            {feedbackConfidence === 4 && 'Good progress / अच्छा है'}
-                            {feedbackConfidence === 3 && 'Average progress / सामान्य'}
-                            {feedbackConfidence === 2 && 'Needs more work / सुधार की जरूरत'}
-                            {feedbackConfidence === 1 && 'Struggling / कठिनाई हो रही है'}
+                          <p className="text-center text-[10px] text-slate-400 uppercase tracking-wider mt-2">
+                            {feedbackConfidence === 5 && 'Excellent progress'}
+                            {feedbackConfidence === 4 && 'Good progress'}
+                            {feedbackConfidence === 3 && 'Average progress'}
+                            {feedbackConfidence === 2 && 'Needs more work'}
+                            {feedbackConfidence === 1 && 'Struggling'}
                           </p>
                         </div>
 
                         <div>
-                          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">
-                            Weekly Remarks / कोई सुझाव या टिप्पणी
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                            Remarks / कोई सुझाव या टिप्पणी
                           </label>
                           <textarea
                             value={feedbackComment}
                             onChange={(e) => setFeedbackComment(e.target.value)}
-                            placeholder="How did they do? Any details to share with the coordinator?..."
-                            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 h-20"
+                            placeholder="Share observations with the coordinator..."
+                            className="w-full px-4 py-3 border border-slate-200 rounded text-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950 h-24"
                           ></textarea>
                         </div>
                       </div>
 
-                      <div class="flex space-x-2 pt-2">
+                      <div className="flex space-x-3 pt-2">
                         <button
                           type="button"
                           onClick={() => setQuizStep(0)}
-                          class="w-1/3 border border-slate-200 text-slate-600 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-50 transition"
+                          className="w-1/3 border border-slate-200 text-slate-650 py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-50 transition"
                         >
                           Restart
                         </button>
                         <button
                           onClick={submitCheckIn}
                           disabled={submitting}
-                          class="w-2/3 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg text-sm shadow transition disabled:opacity-50"
+                          className="w-2/3 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded text-xs uppercase tracking-wider transition disabled:opacity-50"
                         >
                           {submitting ? 'Submitting...' : 'Submit / दर्ज करें'}
                         </button>
@@ -432,26 +432,26 @@ function ParentCheckIn() {
           </div>
 
           {/* Past Check-ins History */}
-          <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4 space-y-3">
-            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Past Weekend Check-ins</h3>
+          <div className="bg-white rounded border border-slate-200 p-6 space-y-4 shadow-sm">
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Past Weekend Check-ins</h3>
             {pastCheckIns.length === 0 ? (
-              <p class="text-xs text-slate-400 italic">No check-ins completed yet.</p>
+              <p className="text-xs text-slate-400 italic">No check-ins completed yet.</p>
             ) : (
-              <div class="space-y-2">
+              <div className="space-y-3">
                 {pastCheckIns.map(c => (
-                  <div key={c._id} class="flex justify-between items-center bg-slate-50 p-2.5 rounded border border-slate-100 text-xs">
+                  <div key={c._id} className="flex justify-between items-center bg-slate-50 p-4 rounded border border-slate-200 text-xs">
                     <div>
-                      <p class="font-semibold text-slate-800 capitalize">
+                      <p className="font-semibold text-slate-800 uppercase tracking-wider">
                         {c.quizResults?.subject} Check
                       </p>
-                      <p class="text-[10px] text-slate-400">
+                      <p className="text-[10px] text-slate-400 mt-1">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </p>
                     </div>
-                    <div class="text-right">
-                      <p class="font-bold text-amber-600">Score: {c.quizResults?.score}/3</p>
-                      <span class="text-amber-500 text-[10px]">
-                        {'★'.repeat(c.parentFeedback?.confidence)}
+                    <div className="text-right">
+                      <p className="font-semibold text-slate-900">Score: {c.quizResults?.score}/3</p>
+                      <span className="text-slate-400 text-[10px] uppercase font-semibold">
+                        Confidence: {c.parentFeedback?.confidence}/5
                       </span>
                     </div>
                   </div>
