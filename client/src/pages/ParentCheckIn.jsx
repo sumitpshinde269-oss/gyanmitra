@@ -78,9 +78,9 @@ function ParentCheckIn() {
   const getQuizQuestions = (subject, level) => {
     const readingQuestions = {
       Beginner: [
-        { text: 'Ask your child to read this sound: "क" (ka)', answer: 'क' },
-        { text: 'Ask your child to read this sound: "म" (ma)', answer: 'म' },
-        { text: 'Ask your child to read this sound: "त" (ta)', answer: 'त' }
+        { text: 'Ask your child to read this sound: "A"', answer: 'A' },
+        { text: 'Ask your child to read this sound: "M"', answer: 'M' },
+        { text: 'Ask your child to read this sound: "T"', answer: 'T' }
       ],
       Letter: [
         { text: 'Ask your child to read this alphabet: "R"', answer: 'R' },
@@ -88,19 +88,19 @@ function ParentCheckIn() {
         { text: 'Ask your child to read this alphabet: "Y"', answer: 'Y' }
       ],
       Word: [
-        { text: 'Ask your child to read this word: "नल" (Tap)', answer: 'नल' },
-        { text: 'Ask your child to read this word: "घर" (Home)', answer: 'घर' },
-        { text: 'Ask your child to read this word: "आम" (Mango)', answer: 'आम' }
+        { text: 'Ask your child to read this word: "CAT"', answer: 'CAT' },
+        { text: 'Ask your child to read this word: "HOME"', answer: 'HOME' },
+        { text: 'Ask your child to read this word: "BOOK"', answer: 'BOOK' }
       ],
       Paragraph: [
-        { text: 'Ask your child to read: "राम घर चल। नल पर पानी भर।"', answer: 'राम घर चल...' },
-        { text: 'Ask your child to read: "यह मेरा कुत्ता है। यह बहुत तेज दौड़ता है।"', answer: 'यह मेरा कुत्ता...' },
-        { text: 'Ask your child to read: "आज आसमान साफ है। सूरज चमक रहा है।"', answer: 'आज आसमान साफ...' }
+        { text: 'Ask your child to read: "Ram goes home. He fills water from the tap."', answer: 'Ram goes home...' },
+        { text: 'Ask your child to read: "This is my dog. It runs very fast."', answer: 'This is my dog...' },
+        { text: 'Ask your child to read: "The sky is clear today. The sun is shining."', answer: 'The sky is clear...' }
       ],
       Story: [
-        { text: 'Ask your child to read this short story: "एक जंगल में एक शेर रहता था। वह बहुत शक्तिशाली था। सभी जानवर उससे डरते थे। एक दिन एक छोटी चींटी ने उसकी जान बचाई।"', answer: 'Story reading' },
-        { text: 'Ask child: "Why did the animals fear the lion?" (Sher se sabhi kyon darte the?)', answer: 'Because he was powerful' },
-        { text: 'Ask child: "Who saved the lion?" (Sher ki jaan kisne bachayi?)', answer: 'The small ant' }
+        { text: 'Ask your child to read: "A lion lived in a forest. He was very strong. All animals feared him. One day a small ant saved his life."', answer: 'Story reading' },
+        { text: 'Ask child: "Why did the animals fear the lion?"', answer: 'Because he was powerful' },
+        { text: 'Ask child: "Who saved the lion?"', answer: 'The small ant' }
       ]
     };
 
@@ -200,7 +200,7 @@ function ParentCheckIn() {
       {/* Student Selector */}
       {students.length > 0 && (
         <div className="bg-white rounded border border-slate-200 p-5 shadow-sm">
-          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Child / बच्चा चुनें</label>
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Child</label>
           <select
             value={selectedStudent?._id || ''}
             onChange={handleStudentSelect}
@@ -318,7 +318,7 @@ function ParentCheckIn() {
                       onClick={handleStartCheckin}
                       className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded text-xs uppercase tracking-wider shadow transition"
                     >
-                      Start Weekly Quiz / क्विज़ शुरू करें
+                      Start Weekly Quiz
                     </button>
                   </div>
                 </div>
@@ -345,13 +345,13 @@ function ParentCheckIn() {
                           onClick={() => handleAnswer(false)}
                           className="border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3.5 rounded text-xs uppercase tracking-wider transition"
                         >
-                          Incorrect / नहीं पढ़ पाया
+                          Incorrect
                         </button>
                         <button
                           onClick={() => handleAnswer(true)}
                           className="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded text-xs uppercase tracking-wider transition"
                         >
-                          Correct / सही पढ़ा
+                          Correct
                         </button>
                       </div>
                     </div>
@@ -368,7 +368,7 @@ function ParentCheckIn() {
                       <div className="space-y-4 pt-4 border-t border-slate-150">
                         <div>
                           <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                            Your Confidence Rating / आपका विश्वास
+                            Your Confidence Rating
                           </label>
                           <div className="flex space-x-3 justify-center py-2">
                             {[1, 2, 3, 4, 5].map((val) => (
@@ -397,7 +397,7 @@ function ParentCheckIn() {
 
                         <div>
                           <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                            Remarks / कोई सुझाव या टिप्पणी
+                            Remarks
                           </label>
                           <textarea
                             value={feedbackComment}
@@ -421,7 +421,7 @@ function ParentCheckIn() {
                           disabled={submitting}
                           className="w-2/3 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded text-xs uppercase tracking-wider transition disabled:opacity-50"
                         >
-                          {submitting ? 'Submitting...' : 'Submit / दर्ज करें'}
+                          {submitting ? 'Submitting...' : 'Submit'}
                         </button>
                       </div>
                     </div>

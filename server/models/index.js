@@ -8,7 +8,7 @@ const readJSON = () => {
   try {
     return JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
   } catch (e) {
-    return { users: [], students: [], sessionLogs: [], weekendCheckIns: [], consents: [] };
+    return { users: [], students: [], sessionLogs: [], weekendCheckIns: [], consents: [], sessionGuides: [] };
   }
 };
 
@@ -75,11 +75,23 @@ const consentSchema = new mongoose.Schema({
   parentSignatureText: String
 }, { timestamps: true });
 
+const sessionGuideSchema = new mongoose.Schema({
+  subject: { type: String, required: true, enum: ['reading', 'math'] },
+  level: { type: String, required: true },
+  activities: [{
+    title: { type: String, required: true },
+    description: { type: String, required: true }
+  }]
+}, { timestamps: true });
+
+sessionGuideSchema.index({ subject: 1, level: 1 }, { unique: true });
+
 const MongoUser = mongoose.model('User', userSchema);
 const MongoStudent = mongoose.model('Student', studentSchema);
 const MongoSessionLog = mongoose.model('SessionLog', sessionLogSchema);
 const MongoWeekendCheckIn = mongoose.model('WeekendCheckIn', weekendCheckInSchema);
 const MongoConsent = mongoose.model('Consent', consentSchema);
+const MongoSessionGuide = mongoose.model('SessionGuide', sessionGuideSchema);
 
 // ----------------------------------------------------
 // 2. Query Builder Mock for Populating (For Mock mode)
@@ -194,6 +206,9 @@ function createModelWrapper(collectionName, mongooseModel) {
         return mongooseModel.create(docData);
       }
       const data = readJSON();
+      if (!data[collectionName]) {
+        data[collectionName] = [];
+      }
       const newItem = {
         _id: Math.random().toString(36).substring(2, 11),
         createdAt: new Date().toISOString(),
@@ -270,5 +285,6 @@ module.exports = {
   Student: createModelWrapper('students', MongoStudent),
   SessionLog: createModelWrapper('sessionLogs', MongoSessionLog),
   WeekendCheckIn: createModelWrapper('weekendCheckIns', MongoWeekendCheckIn),
-  Consent: createModelWrapper('consents', MongoConsent)
+  Consent: createModelWrapper('consents', MongoConsent),
+  SessionGuide: createModelWrapper('sessionGuides', MongoSessionGuide)
 };

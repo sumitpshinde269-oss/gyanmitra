@@ -1,4 +1,4 @@
-const { Student, User, SessionLog, WeekendCheckIn, Consent } = require('../models');
+const { Student, User, SessionLog, WeekendCheckIn, Consent, SessionGuide } = require('../models');
 
 // ========================================================
 // Users Management
@@ -258,6 +258,68 @@ exports.submitWeekendCheckIn = async (req, res) => {
     });
 
     res.status(201).json(checkIn);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ========================================================
+// Session Guides (activities per level)
+// ========================================================
+
+const VALID_LEVELS = {
+  reading: ['Beginner', 'Letter', 'Word', 'Paragraph', 'Story'],
+  math: ['Beginner', 'Number', 'Addition', 'Subtraction', 'Division']
+};
+
+exports.getSessionGuides = async (req, res) => {
+  try {
+    const { subject, level } = req.query;
+    const query = {};
+    if (subject) query.subject = subject;
+    if (level) query.level = level;
+
+    const guides = await SessionGuide.find(query);
+    res.json(guides);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateSessionGuide = async (req, res) => {
+  try {
+    const { subject, level } = req.params;
+    const { activities } = req.body;
+
+    if (!VALID_LEVELS[subject] || !VALID_LEVELS[subject].includes(level)) {
+      return res.status(400).json({ error: 'Invalid subject or level' });
+    }
+
+    if (!Array.isArray(activities) || activities.length < 2 || activities.length > 3) {
+      return res.status(400).json({ error: 'Provide 2 or 3 activities' });
+    }
+
+    const cleaned = activities.map((a) => ({
+      title: String(a.title || '').trim(),
+      description: String(a.description || '').trim()
+    }));
+
+    if (cleaned.some((a) => !a.title || !a.description)) {
+      return res.status(400).json({ error: 'Each activity needs a title and description' });
+    }
+
+    let guide = await SessionGuide.findOne({ subject, level });
+    if (guide) {
+      guide = await SessionGuide.findByIdAndUpdate(
+        guide._id,
+        { activities: cleaned },
+        { new: true }
+      );
+    } else {
+      guide = await SessionGuide.create({ subject, level, activities: cleaned });
+    }
+
+    res.json(guide);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

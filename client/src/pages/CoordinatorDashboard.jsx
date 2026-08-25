@@ -25,6 +25,22 @@ function CoordinatorDashboard() {
   const [editReadingLevel, setEditReadingLevel] = useState('');
   const [editMathLevel, setEditMathLevel] = useState('');
 
+  // Session Guide editor state
+  const [sessionGuides, setSessionGuides] = useState([]);
+  const [guideSubject, setGuideSubject] = useState('reading');
+  const [guideLevel, setGuideLevel] = useState('Beginner');
+  const [guideActivities, setGuideActivities] = useState([
+    { title: '', description: '' },
+    { title: '', description: '' },
+    { title: '', description: '' }
+  ]);
+  const [guideSaving, setGuideSaving] = useState(false);
+  const [guideMessage, setGuideMessage] = useState('');
+
+  const READING_LEVELS = ['Beginner', 'Letter', 'Word', 'Paragraph', 'Story'];
+  const MATH_LEVELS = ['Beginner', 'Number', 'Addition', 'Subtraction', 'Division'];
+  const levelsForSubject = guideSubject === 'reading' ? READING_LEVELS : MATH_LEVELS;
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -32,12 +48,13 @@ function CoordinatorDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [statsRes, studentsRes, staffRes, logsRes, checkinsRes] = await Promise.all([
+      const [statsRes, studentsRes, staffRes, logsRes, checkinsRes, guidesRes] = await Promise.all([
         axios.get('/api/stats'),
         axios.get('/api/students'),
         axios.get('/api/users/staff-parents'),
         axios.get('/api/session-logs'),
-        axios.get('/api/weekend-checkins')
+        axios.get('/api/weekend-checkins'),
+        axios.get('/api/session-guides')
       ]);
 
       setStats(statsRes.data);
@@ -46,6 +63,7 @@ function CoordinatorDashboard() {
       setParents(staffRes.data.parents);
       setLogs(logsRes.data);
       setCheckins(checkinsRes.data);
+      setSessionGuides(guidesRes.data);
     } catch (err) {
       console.error('Error fetching coordinator dashboard data:', err);
     } finally {
@@ -108,6 +126,52 @@ function CoordinatorDashboard() {
     }
   };
 
+  // Load activities into editor when subject/level or guides change
+  useEffect(() => {
+    const guide = sessionGuides.find((g) => g.subject === guideSubject && g.level === guideLevel);
+    const acts = guide?.activities || [];
+    setGuideActivities([
+      { title: acts[0]?.title || '', description: acts[0]?.description || '' },
+      { title: acts[1]?.title || '', description: acts[1]?.description || '' },
+      { title: acts[2]?.title || '', description: acts[2]?.description || '' }
+    ]);
+    setGuideMessage('');
+  }, [guideSubject, guideLevel, sessionGuides]);
+
+  const handleGuideSubjectChange = (nextSubject) => {
+    setGuideSubject(nextSubject);
+    setGuideLevel(nextSubject === 'reading' ? 'Beginner' : 'Beginner');
+  };
+
+  const updateGuideActivity = (index, field, value) => {
+    setGuideActivities((prev) =>
+      prev.map((a, i) => (i === index ? { ...a, [field]: value } : a))
+    );
+  };
+
+  const handleSaveGuide = async () => {
+    const filled = guideActivities.filter((a) => a.title.trim() && a.description.trim());
+    if (filled.length < 2 || filled.length > 3) {
+      setGuideMessage('Enter 2 or 3 complete activities (title + description).');
+      return;
+    }
+
+    try {
+      setGuideSaving(true);
+      setGuideMessage('');
+      await axios.put(`/api/session-guides/${guideSubject}/${guideLevel}`, {
+        activities: filled
+      });
+      setGuideMessage('Session guide saved.');
+      const guidesRes = await axios.get('/api/session-guides');
+      setSessionGuides(guidesRes.data);
+    } catch (err) {
+      setGuideMessage(err.response?.data?.error || 'Failed to save session guide.');
+    } finally {
+      setGuideSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
@@ -146,6 +210,7 @@ function CoordinatorDashboard() {
         {[
           { id: 'overview', label: 'Stats & Progress' },
           { id: 'students', label: 'Students Roster' },
+          { id: 'sessionGuides', label: 'Session Guides' },
           { id: 'tutorLogs', label: 'Tutor Feedbacks' },
           { id: 'checkins', label: 'Weekend Check-ins' }
         ].map((t) => (
@@ -278,6 +343,102 @@ function CoordinatorDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: SESSION GUIDES */}
+      {activeTab === 'sessionGuides' && (
+        <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden">
+          <div className="border-b border-slate-200 p-6">
+            <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider">Edit Session Guides</h2>
+            <p className="text-xs text-slate-400 mt-1">Set 2–3 teaching activities tutors see for each learning level</p>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Subject</label>
+                <div className="flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => handleGuideSubjectChange('reading')}
+                    className={`flex-1 py-2.5 px-4 rounded text-xs uppercase tracking-wider font-semibold border transition ${
+                      guideSubject === 'reading'
+                        ? 'bg-slate-900 border-slate-900 text-white shadow-sm'
+                        : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                    }`}
+                  >
+                    Reading
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleGuideSubjectChange('math')}
+                    className={`flex-1 py-2.5 px-4 rounded text-xs uppercase tracking-wider font-semibold border transition ${
+                      guideSubject === 'math'
+                        ? 'bg-slate-900 border-slate-900 text-white shadow-sm'
+                        : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                    }`}
+                  >
+                    Math
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Level</label>
+                <select
+                  value={guideLevel}
+                  onChange={(e) => setGuideLevel(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded p-3 text-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
+                >
+                  {levelsForSubject.map((lvl) => (
+                    <option key={lvl} value={lvl}>{lvl}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {guideMessage && (
+              <div className={`p-4 rounded text-xs border ${
+                guideMessage.includes('saved')
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                  : 'bg-red-50 text-red-700 border-red-200'
+              }`}>
+                {guideMessage}
+              </div>
+            )}
+
+            <div className="space-y-5">
+              {guideActivities.map((activity, idx) => (
+                <div key={idx} className="p-4 bg-slate-50 rounded border border-slate-200 space-y-3">
+                  <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                    Activity {idx + 1}{idx === 2 ? ' (optional)' : ''}
+                  </p>
+                  <input
+                    type="text"
+                    value={activity.title}
+                    onChange={(e) => updateGuideActivity(idx, 'title', e.target.value)}
+                    placeholder="Activity title"
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950 bg-white"
+                  />
+                  <textarea
+                    value={activity.description}
+                    onChange={(e) => updateGuideActivity(idx, 'description', e.target.value)}
+                    placeholder="Simple steps the tutor can follow..."
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950 h-20 bg-white"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveGuide}
+              disabled={guideSaving}
+              className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-6 rounded text-xs uppercase tracking-wider transition disabled:opacity-50"
+            >
+              {guideSaving ? 'Saving...' : 'Save Session Guide'}
+            </button>
           </div>
         </div>
       )}

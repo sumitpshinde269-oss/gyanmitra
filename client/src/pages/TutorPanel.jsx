@@ -4,6 +4,7 @@ import axios from 'axios';
 function TutorPanel() {
   const [students, setStudents] = useState([]);
   const [sessionLogs, setSessionLogs] = useState([]);
+  const [sessionGuides, setSessionGuides] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Form State
@@ -23,13 +24,15 @@ function TutorPanel() {
   const fetchTutorData = async () => {
     try {
       setLoading(true);
-      const [studentsRes, logsRes] = await Promise.all([
+      const [studentsRes, logsRes, guidesRes] = await Promise.all([
         axios.get('/api/students'),
-        axios.get('/api/session-logs')
+        axios.get('/api/session-logs'),
+        axios.get('/api/session-guides')
       ]);
 
       setStudents(studentsRes.data);
       setSessionLogs(logsRes.data);
+      setSessionGuides(guidesRes.data);
       if (studentsRes.data.length > 0) {
         setSelectedStudentId(studentsRes.data[0]._id);
       }
@@ -39,6 +42,15 @@ function TutorPanel() {
       setLoading(false);
     }
   };
+
+  const selectedStudent = students.find((s) => s._id === selectedStudentId);
+  const currentLevel =
+    subject === 'reading'
+      ? selectedStudent?.learningLevel?.reading || 'Beginner'
+      : selectedStudent?.learningLevel?.math || 'Beginner';
+
+  const guideActivities =
+    sessionGuides.find((g) => g.subject === subject && g.level === currentLevel)?.activities || [];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,7 +62,7 @@ function TutorPanel() {
     try {
       setSubmitting(true);
       setMessage('');
-      
+
       await axios.post('/api/session-logs', {
         studentId: selectedStudentId,
         date,
@@ -60,12 +72,10 @@ function TutorPanel() {
         observations
       });
 
-      // Clear fields
       setTopicsCovered('');
       setObservations('');
       setMessage('Session logged successfully!');
-      
-      // Reload history
+
       const logsRes = await axios.get('/api/session-logs');
       setSessionLogs(logsRes.data);
     } catch (err) {
@@ -74,6 +84,7 @@ function TutorPanel() {
       setSubmitting(false);
     }
   };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
@@ -84,10 +95,71 @@ function TutorPanel() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {/* Session Logger Form */}
       <div className="md:col-span-2 space-y-6">
+        {/* Session Guide — shown before Weekly Session Log */}
+        {students.length > 0 && (
+          <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden animate-scale-in">
+            <div className="border-b border-slate-200 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider">Session Guide</h2>
+                <p className="text-xs text-slate-400 mt-1">
+                  Activities for{' '}
+                  <strong className="text-slate-600 font-medium">{selectedStudent?.name}</strong>
+                  {' · '}
+                  Level <strong className="text-slate-600 font-medium">{currentLevel}</strong>
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setSubject('reading')}
+                  className={`px-3 py-2 rounded text-[10px] uppercase tracking-wider font-semibold border transition ${
+                    subject === 'reading'
+                      ? 'bg-slate-900 border-slate-900 text-white'
+                      : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                  }`}
+                >
+                  Reading
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubject('math')}
+                  className={`px-3 py-2 rounded text-[10px] uppercase tracking-wider font-semibold border transition ${
+                    subject === 'math'
+                      ? 'bg-slate-900 border-slate-900 text-white'
+                      : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                  }`}
+                >
+                  Math
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              {guideActivities.length === 0 ? (
+                <p className="text-xs text-slate-400 italic">
+                  No activities set for this level yet. Ask your coordinator to add a session guide.
+                </p>
+              ) : (
+                <ol className="space-y-4">
+                  {guideActivities.map((activity, idx) => (
+                    <li key={idx} className="flex gap-4">
+                      <span className="flex-shrink-0 w-6 h-6 rounded bg-slate-900 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">
+                        {idx + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-slate-900">{activity.title}</p>
+                        <p className="text-xs text-slate-500 mt-1 leading-relaxed">{activity.description}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Weekly Session Log */}
         <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden animate-scale-in">
-          {/* Header */}
           <div className="border-b border-slate-200 p-6">
             <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider">Weekly Session Log</h2>
             <p className="text-xs text-slate-400 mt-1">Log weekly studies with your junior student</p>
@@ -110,7 +182,6 @@ function TutorPanel() {
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Select Student */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Junior Student</label>
                     <select
@@ -124,7 +195,6 @@ function TutorPanel() {
                     </select>
                   </div>
 
-                  {/* Date */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Date</label>
                     <input
@@ -137,7 +207,6 @@ function TutorPanel() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Subject */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Subject</label>
                     <div className="flex space-x-3">
@@ -166,7 +235,6 @@ function TutorPanel() {
                     </div>
                   </div>
 
-                  {/* Duration */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Session Duration</label>
                     <select
@@ -182,9 +250,8 @@ function TutorPanel() {
                   </div>
                 </div>
 
-                {/* Topics Covered */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Topics Covered / क्या पढ़ाया?</label>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Topics Covered</label>
                   <textarea
                     value={topicsCovered}
                     onChange={(e) => setTopicsCovered(e.target.value)}
@@ -194,9 +261,8 @@ function TutorPanel() {
                   ></textarea>
                 </div>
 
-                {/* Observations */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Observations / क्या सुधार दिखा?</label>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Observations</label>
                   <textarea
                     value={observations}
                     onChange={(e) => setObservations(e.target.value)}
@@ -210,7 +276,7 @@ function TutorPanel() {
                   disabled={submitting}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded text-xs uppercase tracking-wider transition disabled:opacity-50"
                 >
-                  {submitting ? 'Logging...' : 'Submit Session Log / लॉग जमा करें'}
+                  {submitting ? 'Logging...' : 'Submit Session Log'}
                 </button>
               </form>
             )}
@@ -218,9 +284,7 @@ function TutorPanel() {
         </div>
       </div>
 
-      {/* Tutor Assignment Details & History */}
       <div className="space-y-6">
-        {/* Assigned Students Info */}
         <div className="bg-white p-5 rounded border border-slate-200 shadow-sm space-y-4">
           <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Assigned Junior Students</h3>
           {students.length === 0 ? (
@@ -240,7 +304,6 @@ function TutorPanel() {
           )}
         </div>
 
-        {/* History of logs */}
         <div className="bg-white p-5 rounded border border-slate-200 shadow-sm space-y-4">
           <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Your Past Session Logs</h3>
           {sessionLogs.length === 0 ? (

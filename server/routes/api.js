@@ -83,6 +83,17 @@ router.post(
 );
 
 // ----------------------------------------------------
+// Session Guides (teaching activities per level)
+// ----------------------------------------------------
+router.get('/session-guides', protect, appController.getSessionGuides);
+router.put(
+  '/session-guides/:subject/:level',
+  protect,
+  restrictTo('coordinator', 'school_admin'),
+  appController.updateSessionGuide
+);
+
+// ----------------------------------------------------
 // Coordinator Dashboard Stats
 // ----------------------------------------------------
 router.get(

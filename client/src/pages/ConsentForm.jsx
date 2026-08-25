@@ -115,7 +115,7 @@ function ConsentForm() {
       {/* Selector */}
       {students.length > 1 && (
         <div className="bg-white rounded border border-slate-200 p-5 shadow-sm">
-          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Child / बच्चा चुनें</label>
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select Child</label>
           <select
             value={selectedStudent?._id || ''}
             onChange={handleStudentChange}
@@ -136,7 +136,7 @@ function ConsentForm() {
         <div className="bg-white border border-slate-200 rounded shadow-sm overflow-hidden animate-scale-in">
           {/* Header */}
           <div className="border-b border-slate-200 p-6">
-            <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider">Consent Form / सहमति पत्र</h2>
+            <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider">Consent Form</h2>
             <p className="text-xs text-slate-400 mt-1">Student: {selectedStudent.name} (Grade {selectedStudent.grade})</p>
           </div>
 
@@ -149,7 +149,7 @@ function ConsentForm() {
 
             {signed ? (
               <div className="text-center py-6 space-y-4">
-                <h3 className="text-base font-bold text-slate-900">Consent Signed / सहमति दी गई है</h3>
+                <h3 className="text-base font-bold text-slate-900">Consent Signed</h3>
                 <p className="text-xs text-slate-500 leading-relaxed max-w-xs mx-auto">
                   You have already signed the consent form for <strong>{selectedStudent.name}</strong>. You can perform weekly check-ins.
                 </p>
@@ -177,7 +177,7 @@ function ConsentForm() {
                     />
                     <div className="text-xs sm:text-sm">
                       <p className="font-semibold text-slate-700">Tutoring Participation</p>
-                      <p className="text-slate-400 text-xs mt-1">I allow my child to study with senior tutors. / मैं अपने बच्चे को ट्यूशन सत्र में भाग लेने की अनुमति देता हूँ।</p>
+                      <p className="text-slate-400 text-xs mt-1">I allow my child to study with senior tutors.</p>
                     </div>
                   </label>
 
@@ -190,7 +190,7 @@ function ConsentForm() {
                     />
                     <div className="text-xs sm:text-sm">
                       <p className="font-semibold text-slate-700">Weekly Weekend Check-ins</p>
-                      <p className="text-slate-400 text-xs mt-1">I agree to sit with my child on weekends for a 5-minute quiz check. / मैं सप्ताहांत पर बच्चे के साथ बैठकर 5 मिनट का क्विज़ पूरा करने के लिए सहमत हूँ।</p>
+                      <p className="text-slate-400 text-xs mt-1">I agree to sit with my child on weekends for a 5-minute quiz check.</p>
                     </div>
                   </label>
 
@@ -203,7 +203,7 @@ function ConsentForm() {
                     />
                     <div className="text-xs sm:text-sm">
                       <p className="font-semibold text-slate-700">Learning Progress Sharing</p>
-                      <p className="text-slate-400 text-xs mt-1">I authorize sharing progress metrics with school coordinators. / मैं स्कूल समन्वयक के साथ सीखने के स्तर साझा करने की अनुमति देता हूँ।</p>
+                      <p className="text-slate-400 text-xs mt-1">I authorize sharing progress metrics with school coordinators.</p>
                     </div>
                   </label>
                 </div>
@@ -211,13 +211,13 @@ function ConsentForm() {
                 {/* Signature input */}
                 <div className="border-t border-slate-200 pt-4">
                   <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                    Parent Signature / अभिभावक के हस्ताक्षर
+                    Parent Signature
                   </label>
                   <input
                     type="text"
                     value={signature}
                     onChange={(e) => setSignature(e.target.value)}
-                    placeholder="Type your full name (ई-हस्ताक्षर हेतु अपना नाम लिखें)"
+                    placeholder="Type your full name"
                     className="w-full px-4 py-3 border border-slate-200 rounded text-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950 font-medium"
                   />
                 </div>
@@ -227,7 +227,7 @@ function ConsentForm() {
                   disabled={saving}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded text-xs uppercase tracking-wider transition disabled:opacity-50"
                 >
-                  {saving ? 'Signing...' : 'Sign & Submit Consent / सहमति दर्ज करें'}
+                  {saving ? 'Signing...' : 'Sign & Submit Consent'}
                 </button>
               </form>
             )}
