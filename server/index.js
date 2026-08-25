@@ -165,7 +165,8 @@ const seedData = async () => {
       role: 'tutor',
       name: 'Priya Sharma',
       phone: '8765432109',
-      schoolName: 'Govt. Primary School, Rampur'
+      schoolName: 'Govt. Primary School, Rampur',
+      tutorStatus: 'active'
     });
 
     // Create a Parent

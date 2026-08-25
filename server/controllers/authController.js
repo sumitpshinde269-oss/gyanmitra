@@ -46,7 +46,8 @@ exports.register = async (req, res) => {
         role: user.role,
         name: user.name,
         phone: user.phone,
-        schoolName: user.schoolName
+        schoolName: user.schoolName,
+        tutorStatus: user.tutorStatus || 'active'
       }
     });
   } catch (error) {
@@ -89,7 +90,8 @@ exports.login = async (req, res) => {
         role: user.role,
         name: user.name,
         phone: user.phone,
-        schoolName: user.schoolName
+        schoolName: user.schoolName,
+        tutorStatus: user.tutorStatus || 'active'
       }
     });
   } catch (error) {
@@ -112,7 +114,8 @@ exports.getMe = async (req, res) => {
       role: user.role,
       name: user.name,
       phone: user.phone,
-      schoolName: user.schoolName
+      schoolName: user.schoolName,
+      tutorStatus: user.tutorStatus || 'active'
     });
   } catch (error) {
     console.error(error);

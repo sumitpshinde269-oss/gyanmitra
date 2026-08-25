@@ -190,10 +190,42 @@ function ParentCheckIn() {
     );
   }
 
-  const levelProgressMap = {
-    reading: { Beginner: 10, Letter: 35, Word: 60, Paragraph: 80, Story: 100 },
-    math: { Beginner: 10, Number: 35, Addition: 60, Subtraction: 80, Division: 100 }
-  };
+  const readingLadder = [
+    { key: 'Beginner', label: 'Beginner' },
+    { key: 'Letter', label: 'Letter' },
+    { key: 'Word', label: 'Word' },
+    { key: 'Paragraph', label: 'Paragraph' },
+    { key: 'Story', label: 'Story' }
+  ];
+  const mathLadder = [
+    { key: 'Beginner', label: 'Beginner' },
+    { key: 'Number', label: 'Number' },
+    { key: 'Addition', label: 'Add' },
+    { key: 'Subtraction', label: 'Sub' },
+    { key: 'Division', label: 'Div' }
+  ];
+
+  const renderLevelLadder = (steps, currentLevel) => (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {steps.map((step, idx) => {
+        const isCurrent = step.key === currentLevel;
+        return (
+          <React.Fragment key={step.key}>
+            {idx > 0 && <span className="text-slate-300 text-[10px] select-none">→</span>}
+            <span
+              className={`px-2 py-1 rounded text-[10px] font-semibold uppercase tracking-wider border ${
+                isCurrent
+                  ? 'bg-slate-900 border-slate-900 text-white'
+                  : 'bg-white border-slate-200 text-slate-400'
+              }`}
+            >
+              {step.label}
+            </span>
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="max-w-md mx-auto space-y-6 animate-fade-in">
@@ -251,36 +283,18 @@ function ParentCheckIn() {
               {!isCheckingIn ? (
                 /* Landing screen */
                 <div className="space-y-6">
-                  {/* Current Learning Levels */}
-                  <div className="space-y-4">
+                  {/* Current Learning Levels — ladder */}
+                  <div className="space-y-5">
                     <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Learning Levels</h3>
-                    
-                    {/* Reading Level bar */}
+
                     <div className="space-y-2">
-                      <div className="flex justify-between text-xs font-medium">
-                        <span className="text-slate-700">Reading: <strong>{selectedStudent.learningLevel?.reading || 'Beginner'}</strong></span>
-                        <span className="text-slate-400">{levelProgressMap.reading[selectedStudent.learningLevel?.reading || 'Beginner']}%</span>
-                      </div>
-                      <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          style={{ width: `${levelProgressMap.reading[selectedStudent.learningLevel?.reading || 'Beginner']}%` }}
-                          className="h-full bg-slate-900 rounded-full"
-                        ></div>
-                      </div>
+                      <p className="text-xs font-medium text-slate-700">Reading</p>
+                      {renderLevelLadder(readingLadder, selectedStudent.learningLevel?.reading || 'Beginner')}
                     </div>
 
-                    {/* Math Level bar */}
                     <div className="space-y-2">
-                      <div className="flex justify-between text-xs font-medium">
-                        <span className="text-slate-700">Math: <strong>{selectedStudent.learningLevel?.math || 'Beginner'}</strong></span>
-                        <span className="text-slate-400">{levelProgressMap.math[selectedStudent.learningLevel?.math || 'Beginner']}%</span>
-                      </div>
-                      <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          style={{ width: `${levelProgressMap.math[selectedStudent.learningLevel?.math || 'Beginner']}%` }}
-                          className="h-full bg-slate-900 rounded-full"
-                        ></div>
-                      </div>
+                      <p className="text-xs font-medium text-slate-700">Math</p>
+                      {renderLevelLadder(mathLadder, selectedStudent.learningLevel?.math || 'Beginner')}
                     </div>
                   </div>
 

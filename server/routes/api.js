@@ -20,6 +20,18 @@ router.get(
   restrictTo('coordinator', 'school_admin'),
   appController.getStaffAndParents
 );
+router.post(
+  '/users/tutors',
+  protect,
+  restrictTo('coordinator', 'school_admin'),
+  appController.createTutor
+);
+router.patch(
+  '/users/me/tutor-status',
+  protect,
+  restrictTo('tutor'),
+  appController.updateTutorStatus
+);
 
 // ----------------------------------------------------
 // Student Routes

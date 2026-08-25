@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
   role: { type: String, required: true, enum: ['coordinator', 'school_admin', 'parent', 'tutor'] },
   name: { type: String, required: true },
   phone: String,
-  schoolName: String
+  schoolName: String,
+  tutorStatus: { type: String, enum: ['active', 'on_break'], default: 'active' }
 }, { timestamps: true });
 
 const studentSchema = new mongoose.Schema({
@@ -219,6 +220,10 @@ function createModelWrapper(collectionName, mongooseModel) {
       // Default level for students
       if (collectionName === 'students' && !newItem.learningLevel) {
         newItem.learningLevel = { reading: 'Beginner', math: 'Beginner' };
+      }
+      // Default tutor status
+      if (collectionName === 'users' && newItem.role === 'tutor' && !newItem.tutorStatus) {
+        newItem.tutorStatus = 'active';
       }
 
       data[collectionName].push(newItem);

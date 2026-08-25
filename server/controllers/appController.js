@@ -11,10 +11,91 @@ exports.getStaffAndParents = async (req, res) => {
     const parents = await User.find({ role: 'parent' });
     
     // Clean passwords
-    const cleanTutors = tutors.map(u => ({ id: u._id, name: u.name, username: u.username }));
+    const cleanTutors = tutors.map(u => ({
+      id: u._id,
+      name: u.name,
+      username: u.username,
+      tutorStatus: u.tutorStatus || 'active'
+    }));
     const cleanParents = parents.map(u => ({ id: u._id, name: u.name, username: u.username }));
 
     res.json({ tutors: cleanTutors, parents: cleanParents });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Create a tutor account (coordinator)
+exports.createTutor = async (req, res) => {
+  try {
+    const bcrypt = require('bcryptjs');
+    const { name, username, password, phone } = req.body;
+
+    if (!name || !username || !password) {
+      return res.status(400).json({ error: 'Name, username, and password are required' });
+    }
+
+    const existing = await User.findOne({ username });
+    if (existing) {
+      return res.status(400).json({ error: 'Username already taken' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const tutor = await User.create({
+      username,
+      password: hashedPassword,
+      role: 'tutor',
+      name,
+      phone: phone || '',
+      schoolName: req.user.schoolName || 'Village School A',
+      tutorStatus: 'active'
+    });
+
+    res.status(201).json({
+      id: tutor._id,
+      name: tutor.name,
+      username: tutor.username,
+      tutorStatus: tutor.tutorStatus || 'active'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Tutor updates own availability status
+exports.updateTutorStatus = async (req, res) => {
+  try {
+    const { tutorStatus } = req.body;
+
+    if (!['active', 'on_break'].includes(tutorStatus)) {
+      return res.status(400).json({ error: 'Status must be active or on_break' });
+    }
+
+    if (req.user.role !== 'tutor') {
+      return res.status(403).json({ error: 'Only tutors can update tutor status' });
+    }
+
+    const updated = await User.findByIdAndUpdate(
+      req.user.id,
+      { tutorStatus },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      id: updated._id,
+      username: updated.username,
+      role: updated.role,
+      name: updated.name,
+      phone: updated.phone,
+      schoolName: updated.schoolName,
+      tutorStatus: updated.tutorStatus || 'active'
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

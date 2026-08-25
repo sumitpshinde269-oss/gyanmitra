@@ -16,6 +16,11 @@ function CoordinatorDashboard() {
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [newStudentName, setNewStudentName] = useState('');
   const [newStudentGrade, setNewStudentGrade] = useState('3');
+  const [showAddTutor, setShowAddTutor] = useState(false);
+  const [newTutorName, setNewTutorName] = useState('');
+  const [newTutorUsername, setNewTutorUsername] = useState('');
+  const [newTutorPassword, setNewTutorPassword] = useState('');
+  const [tutorFormError, setTutorFormError] = useState('');
   const [assignStudentId, setAssignStudentId] = useState(null);
   const [assignTutorId, setAssignTutorId] = useState('');
   const [assignParentId, setAssignParentId] = useState('');
@@ -87,6 +92,33 @@ function CoordinatorDashboard() {
       console.error(err);
     }
   };
+
+  const handleAddTutor = async (e) => {
+    e.preventDefault();
+    if (!newTutorName.trim() || !newTutorUsername.trim() || !newTutorPassword.trim()) {
+      setTutorFormError('Name, username, and password are required.');
+      return;
+    }
+
+    try {
+      setTutorFormError('');
+      await axios.post('/api/users/tutors', {
+        name: newTutorName.trim(),
+        username: newTutorUsername.trim(),
+        password: newTutorPassword
+      });
+      setNewTutorName('');
+      setNewTutorUsername('');
+      setNewTutorPassword('');
+      setShowAddTutor(false);
+      fetchDashboardData();
+    } catch (err) {
+      setTutorFormError(err.response?.data?.error || 'Failed to add tutor.');
+    }
+  };
+
+  const needsReassignment = (student) =>
+    Boolean(student.tutorId && (student.tutorId.tutorStatus || 'active') === 'on_break');
 
   const handleOpenAssign = (student) => {
     setAssignStudentId(student._id);
@@ -197,12 +229,20 @@ function CoordinatorDashboard() {
           <h1 className="text-xl font-bold tracking-tight text-slate-900 uppercase">Coordinator Dashboard</h1>
           <p className="text-xs text-slate-405 mt-1">Monitor student tutoring progress, levels, and parent check-ins</p>
         </div>
-        <button
-          onClick={() => setShowAddStudent(true)}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs uppercase tracking-wider px-5 py-3 rounded transition shadow-sm"
-        >
-          Register New Student
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => setShowAddTutor(true)}
+            className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-semibold text-xs uppercase tracking-wider px-5 py-3 rounded transition shadow-sm"
+          >
+            Add Tutor
+          </button>
+          <button
+            onClick={() => setShowAddStudent(true)}
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs uppercase tracking-wider px-5 py-3 rounded transition shadow-sm"
+          >
+            Register New Student
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -255,7 +295,13 @@ function CoordinatorDashboard() {
 
           {/* Recharts Graphical Analysis */}
           <div className="bg-white p-6 rounded border border-slate-200 shadow-sm">
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-6">Learning Level Distribution</h3>
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Learning Level Distribution</h3>
+            <div className="mb-6 p-3 bg-slate-50 border border-slate-100 rounded text-[10px] text-slate-500 leading-relaxed space-y-1">
+              <p className="font-semibold uppercase tracking-wider text-slate-600">Legend — separate scales</p>
+              <p><strong className="text-slate-700">Reading:</strong> Beginner → Letter → Word → Paragraph → Story</p>
+              <p><strong className="text-slate-700">Math:</strong> Beginner → Number → Addition → Subtraction → Division</p>
+              <p className="text-slate-400">Bars are grouped only for comparison; each subject uses its own ladder.</p>
+            </div>
             <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -295,12 +341,22 @@ function CoordinatorDashboard() {
               <tbody className="divide-y divide-slate-200">
                 {students.map((student) => (
                   <tr key={student._id} className="hover:bg-slate-50/50">
-                    <td className="p-4 font-semibold text-slate-900 text-sm">{student.name}</td>
+                    <td className="p-4 font-semibold text-slate-900 text-sm">
+                      <div className="flex flex-col gap-1.5 items-start">
+                        <span>{student.name}</span>
+                        {needsReassignment(student) && (
+                          <span className="border border-amber-300 bg-amber-50 text-amber-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">
+                            Needs Reassignment
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="p-4 text-slate-400 font-medium">Grade {student.grade}</td>
                     <td className="p-4">
                       {student.tutorId ? (
                         <span className="border border-slate-200 text-slate-700 px-2.5 py-1 rounded text-[10px] font-semibold bg-slate-50 uppercase tracking-wider">
                           {student.tutorId.name || student.tutorId}
+                          {(student.tutorId.tutorStatus || 'active') === 'on_break' ? ' · Break' : ''}
                         </span>
                       ) : (
                         <span className="text-slate-350 italic">Unassigned</span>
@@ -566,6 +622,73 @@ function CoordinatorDashboard() {
                 <button
                   type="button"
                   onClick={() => setShowAddStudent(false)}
+                  className="w-1/2 border border-slate-200 text-slate-600 py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 bg-slate-900 text-white py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-800 shadow transition"
+                >
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================
+          MODAL: Add Tutor
+         ======================================================== */}
+      {showAddTutor && (
+        <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded border border-slate-200 w-full max-w-sm shadow-xl overflow-hidden">
+            <div className="border-b border-slate-200 p-5 font-bold text-slate-900 uppercase tracking-wider text-xs flex justify-between items-center">
+              <span>Add Tutor</span>
+              <button onClick={() => { setShowAddTutor(false); setTutorFormError(''); }} className="hover:text-slate-500 text-base font-semibold">Cancel</button>
+            </div>
+            <form onSubmit={handleAddTutor} className="p-6 space-y-5">
+              {tutorFormError && (
+                <div className="p-3 rounded text-xs border bg-red-50 text-red-700 border-red-200">{tutorFormError}</div>
+              )}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tutor Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newTutorName}
+                  onChange={(e) => setNewTutorName(e.target.value)}
+                  placeholder="e.g. Priya Sharma"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Username</label>
+                <input
+                  type="text"
+                  required
+                  value={newTutorUsername}
+                  onChange={(e) => setNewTutorUsername(e.target.value)}
+                  placeholder="e.g. tutor2"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                <input
+                  type="password"
+                  required
+                  value={newTutorPassword}
+                  onChange={(e) => setNewTutorPassword(e.target.value)}
+                  placeholder="Set a login password"
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded text-slate-805 text-sm focus:outline-none focus:ring-1 focus:ring-slate-950"
+                />
+              </div>
+              <div className="flex space-x-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowAddTutor(false); setTutorFormError(''); }}
                   className="w-1/2 border border-slate-200 text-slate-600 py-3 rounded text-xs uppercase tracking-wider font-semibold hover:bg-slate-50 transition"
                 >
                   Cancel

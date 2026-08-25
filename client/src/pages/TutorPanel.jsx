@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 function TutorPanel() {
+  const { user, setUser } = useAuth();
   const [students, setStudents] = useState([]);
   const [sessionLogs, setSessionLogs] = useState([]);
   const [sessionGuides, setSessionGuides] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusUpdating, setStatusUpdating] = useState(false);
 
   // Form State
   const [selectedStudentId, setSelectedStudentId] = useState('');
@@ -16,6 +19,8 @@ function TutorPanel() {
   const [observations, setObservations] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+
+  const tutorStatus = user?.tutorStatus || 'active';
 
   useEffect(() => {
     fetchTutorData();
@@ -40,6 +45,19 @@ function TutorPanel() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStatusToggle = async (nextStatus) => {
+    if (nextStatus === tutorStatus || statusUpdating) return;
+    try {
+      setStatusUpdating(true);
+      const res = await axios.patch('/api/users/me/tutor-status', { tutorStatus: nextStatus });
+      setUser((prev) => ({ ...prev, ...res.data }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setStatusUpdating(false);
     }
   };
 
@@ -94,7 +112,46 @@ function TutorPanel() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="space-y-6">
+      {/* Tutor availability status */}
+      <div className="bg-white rounded border border-slate-200 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Your Status</h2>
+          <p className="text-xs text-slate-400 mt-1">
+            {tutorStatus === 'on_break'
+              ? 'On Break — your students are flagged for reassignment.'
+              : 'Active — you are available for tutoring.'}
+          </p>
+        </div>
+        <div className="flex space-x-2">
+          <button
+            type="button"
+            disabled={statusUpdating}
+            onClick={() => handleStatusToggle('active')}
+            className={`px-4 py-2.5 rounded text-xs uppercase tracking-wider font-semibold border transition disabled:opacity-50 ${
+              tutorStatus === 'active'
+                ? 'bg-slate-900 border-slate-900 text-white'
+                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            Active
+          </button>
+          <button
+            type="button"
+            disabled={statusUpdating}
+            onClick={() => handleStatusToggle('on_break')}
+            className={`px-4 py-2.5 rounded text-xs uppercase tracking-wider font-semibold border transition disabled:opacity-50 ${
+              tutorStatus === 'on_break'
+                ? 'bg-slate-900 border-slate-900 text-white'
+                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            On Break
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div className="md:col-span-2 space-y-6">
         {/* Session Guide — shown before Weekly Session Log */}
         {students.length > 0 && (
@@ -328,6 +385,7 @@ function TutorPanel() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
