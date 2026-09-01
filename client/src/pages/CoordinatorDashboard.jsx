@@ -11,6 +11,8 @@ function CoordinatorDashboard() {
   const [logs, setLogs] = useState([]);
   const [checkins, setCheckins] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [studentSearch, setStudentSearch] = useState('');
+  const [studentFilter, setStudentFilter] = useState('all');
 
   // Modals / Form states
   const [showAddStudent, setShowAddStudent] = useState(false);
@@ -221,6 +223,21 @@ function CoordinatorDashboard() {
     { name: 'Story/Div', Reading: stats?.levels?.reading?.Story || 0, Math: stats?.levels?.math?.Division || 0 }
   ];
 
+  const filteredStudents = students.filter((student) => {
+    const matchesSearch = student.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
+      String(student.grade).includes(studentSearch);
+
+    const matchesFilter =
+      studentFilter === 'all' ||
+      (studentFilter === 'priority' && needsReassignment(student)) ||
+      (studentFilter === 'unassigned' && !student.tutorId) ||
+      (studentFilter === 'assigned' && Boolean(student.tutorId));
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const priorityStudents = students.filter((student) => needsReassignment(student) || !student.tutorId).slice(0, 3);
+
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Page Header */}
@@ -293,6 +310,38 @@ function CoordinatorDashboard() {
             </div>
           </div>
 
+          <div className="bg-white rounded border border-slate-200 p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Priority watchlist</p>
+                <h3 className="mt-2 text-lg font-bold text-slate-900">Students needing attention</h3>
+              </div>
+              <span className="rounded border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-700">
+                {priorityStudents.length} flagged
+              </span>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              {priorityStudents.length === 0 ? (
+                <p className="text-sm text-slate-500 md:col-span-3">No urgent follow-up items right now.</p>
+              ) : (
+                priorityStudents.map((student) => (
+                  <div key={student._id} className="rounded border border-slate-200 bg-slate-50 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-semibold text-slate-800">{student.name}</p>
+                      <span className="rounded bg-amber-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-800">
+                        {student.tutorId ? 'Reassign' : 'Unassigned'}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-xs text-slate-500">Grade {student.grade}</p>
+                    <p className="mt-1 text-xs text-slate-600">
+                      Reading: {student.learningLevel?.reading || 'Beginner'} · Math: {student.learningLevel?.math || 'Beginner'}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
           {/* Recharts Graphical Analysis */}
           <div className="bg-white p-6 rounded border border-slate-200 shadow-sm">
             <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Learning Level Distribution</h3>
@@ -325,6 +374,33 @@ function CoordinatorDashboard() {
       {/* Tab: STUDENTS */}
       {activeTab === 'students' && (
         <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-slate-200 bg-slate-50">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <input
+                type="text"
+                value={studentSearch}
+                onChange={(e) => setStudentSearch(e.target.value)}
+                placeholder="Search by student or grade"
+                className="w-full md:max-w-xs rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none"
+              />
+              <div className="flex flex-wrap gap-2">
+                {['all', 'priority', 'unassigned', 'assigned'].map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setStudentFilter(option)}
+                    className={`rounded px-3 py-2 text-[10px] font-semibold uppercase tracking-wider ${
+                      studentFilter === option
+                        ? 'bg-slate-900 text-white'
+                        : 'border border-slate-200 bg-white text-slate-600'
+                    }`}
+                  >
+                    {option === 'all' ? 'All' : option === 'priority' ? 'Priority' : option === 'unassigned' ? 'Unassigned' : 'Assigned'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -339,7 +415,7 @@ function CoordinatorDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {students.map((student) => (
+                {filteredStudents.map((student) => (
                   <tr key={student._id} className="hover:bg-slate-50/50">
                     <td className="p-4 font-semibold text-slate-900 text-sm">
                       <div className="flex flex-col gap-1.5 items-start">

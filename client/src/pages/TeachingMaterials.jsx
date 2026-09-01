@@ -16,6 +16,9 @@ function TeachingMaterials() {
   const [form, setForm] = useState(initialForm);
   const [showForm, setShowForm] = useState(false);
   const [message, setMessage] = useState('');
+  const [search, setSearch] = useState('');
+  const [subjectFilter, setSubjectFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
 
   const fetchMaterials = async () => {
     try {
@@ -61,6 +64,16 @@ function TeachingMaterials() {
     URL.revokeObjectURL(url);
   };
 
+  const filteredMaterials = materials.filter((material) => {
+    const matchesSearch = `${material.title} ${material.description} ${material.subject}`
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesSubject = subjectFilter === 'all' || material.subject === subjectFilter;
+    const matchesType = typeFilter === 'all' || material.type === typeFilter;
+
+    return matchesSearch && matchesSubject && matchesType;
+  });
+
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
@@ -84,6 +97,37 @@ function TeachingMaterials() {
           >
             {showForm ? 'Close Form' : 'Upload Resource'}
           </button>
+        </div>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-[1.7fr_1fr_1fr]">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search materials"
+            className="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none"
+          />
+          <select
+            value={subjectFilter}
+            onChange={(e) => setSubjectFilter(e.target.value)}
+            className="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none"
+          >
+            <option value="all">All subjects</option>
+            <option value="reading">Reading</option>
+            <option value="math">Math</option>
+            <option value="general">General</option>
+          </select>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none"
+          >
+            <option value="all">All types</option>
+            <option value="lesson_plan">Lesson Plan</option>
+            <option value="worksheet">Worksheet</option>
+            <option value="assessment">Assessment</option>
+            <option value="teaching_tip">Teaching Tip</option>
+          </select>
         </div>
 
         {message && (
@@ -181,8 +225,13 @@ function TeachingMaterials() {
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        {materials.map((material) => (
-          <div key={material._id} className="rounded border border-slate-200 bg-white p-5 shadow-sm">
+        {filteredMaterials.length === 0 ? (
+          <div className="rounded border border-slate-200 bg-white p-6 text-sm text-slate-500 md:col-span-2">
+            No materials match your current search or filters.
+          </div>
+        ) : (
+          filteredMaterials.map((material) => (
+            <div key={material._id} className="rounded border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{material.type.replace('_', ' ')}</p>
@@ -200,15 +249,16 @@ function TeachingMaterials() {
               {material.content.slice(0, 180)}{material.content.length > 180 ? '...' : ''}
             </div>
 
-            <button
-              type="button"
-              onClick={() => handleDownload(material)}
-              className="mt-4 rounded border border-slate-200 bg-white px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-700"
-            >
-              Download
-            </button>
-          </div>
-        ))}
+              <button
+                type="button"
+                onClick={() => handleDownload(material)}
+                className="mt-4 rounded border border-slate-200 bg-white px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-700"
+              >
+                Download
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
