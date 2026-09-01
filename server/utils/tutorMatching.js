@@ -14,6 +14,7 @@ const parseTutorExpertise = (expertise = []) => {
     const [subject, level] = String(entry).split(':');
     if (subject && level) {
       map[`${subject}:${level}`] = true;
+      map[subject] = true;
     }
   });
 
@@ -64,19 +65,19 @@ const suggestTutorsForStudent = (student, tutors = [], sessionLogs = [], workloa
   const ranked = validTutors.map((tutor) => {
     const expertiseMap = parseTutorExpertise(tutor.expertise || []);
     const exactMatch = expertiseMap[`${subject}:${level}`] ? 1 : 0;
-    const subjectMatch = expertiseMap[`${subject}:`] || false;
-    const workload = workloadMap[tutor._id] || 0;
+    const subjectMatch = expertiseMap[subject] ? 1 : 0;
+    const workload = workloadMap[String(tutor._id)] || 0;
     const workloadScore = Math.max(0, 1 - workload / 4);
     const successRate = getTutorSuccessRate(tutor._id, sessionLogs, subject, level);
 
-    let gapFit = 0.4;
+    let gapFit = 0.35;
     if (exactMatch) {
       gapFit = 1;
     } else if (subjectMatch) {
-      gapFit = 0.7;
+      gapFit = 0.75;
     }
 
-    const expertiseScore = exactMatch ? 1 : subjectMatch ? 0.7 : 0.4;
+    const expertiseScore = exactMatch ? 1 : subjectMatch ? 0.75 : 0.5;
     const score = (0.4 * gapFit) + (0.25 * expertiseScore) + (0.2 * workloadScore) + (0.15 * successRate);
 
     return {

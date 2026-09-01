@@ -16,6 +16,7 @@ exports.getStaffAndParents = async (req, res) => {
       id: u._id,
       name: u.name,
       username: u.username,
+      expertise: u.expertise || [],
       tutorStatus: u.tutorStatus || 'active'
     }));
     const cleanParents = parents.map(u => ({ id: u._id, name: u.name, username: u.username }));
@@ -30,7 +31,7 @@ exports.getStaffAndParents = async (req, res) => {
 exports.createTutor = async (req, res) => {
   try {
     const bcrypt = require('bcryptjs');
-    const { name, username, password, phone } = req.body;
+    const { name, username, password, phone, expertise } = req.body;
 
     if (!name || !username || !password) {
       return res.status(400).json({ error: 'Name, username, and password are required' });
@@ -50,6 +51,7 @@ exports.createTutor = async (req, res) => {
       role: 'tutor',
       name,
       phone: phone || '',
+      expertise: Array.isArray(expertise) ? expertise : ['reading:Word', 'math:Number'],
       schoolName: req.user.schoolName || 'Village School A',
       tutorStatus: 'active'
     });

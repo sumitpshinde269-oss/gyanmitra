@@ -121,6 +121,7 @@ const DEMO_USERS = [
     role: 'tutor',
     name: 'Priya Sharma',
     phone: '8765432109',
+    expertise: ['reading:Word', 'reading:Paragraph', 'math:Number'],
     tutorStatus: 'active'
   },
   {
@@ -143,6 +144,7 @@ async function ensureDemoUser(User, hashedPassword, spec) {
     };
     if (spec.role === 'tutor') {
       updates.tutorStatus = existing.tutorStatus || spec.tutorStatus || 'active';
+      updates.expertise = spec.expertise || existing.expertise || ['reading:Word', 'math:Number'];
     }
     const updated = await User.findByIdAndUpdate(existing._id, updates);
     return updated;
@@ -155,7 +157,8 @@ async function ensureDemoUser(User, hashedPassword, spec) {
     name: spec.name,
     phone: spec.phone,
     schoolName: SCHOOL_NAME,
-    ...(spec.tutorStatus ? { tutorStatus: spec.tutorStatus } : {})
+    ...(spec.tutorStatus ? { tutorStatus: spec.tutorStatus } : {}),
+    ...(spec.expertise ? { expertise: spec.expertise } : {})
   });
 }
 

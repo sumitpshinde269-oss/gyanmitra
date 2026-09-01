@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone: String,
   schoolName: String,
+  expertise: [{ type: String }],
   tutorStatus: { type: String, enum: ['active', 'on_break'], default: 'active' }
 }, { timestamps: true });
 
