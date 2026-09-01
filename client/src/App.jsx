@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import ConsentForm from './pages/ConsentForm';
 import CoordinatorDashboard from './pages/CoordinatorDashboard';
 import ParentCheckIn from './pages/ParentCheckIn';
@@ -116,8 +117,9 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Login Route */}
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
           {/* Protected Application Routes */}
           <Route

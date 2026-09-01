@@ -92,6 +92,19 @@ function Login() {
           </button>
         </form>
 
+        <div className="mt-5 text-center">
+          <p className="text-xs text-slate-500">
+            Don&apos;t have an account?{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/register')}
+              className="font-semibold text-slate-900 underline underline-offset-2"
+            >
+              Create one
+            </button>
+          </p>
+        </div>
+
         {/* Divider */}
         <div className="relative my-8">
           <div className="absolute inset-0 flex items-center">
