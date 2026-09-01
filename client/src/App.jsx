@@ -7,6 +7,7 @@ import ConsentForm from './pages/ConsentForm';
 import CoordinatorDashboard from './pages/CoordinatorDashboard';
 import ParentCheckIn from './pages/ParentCheckIn';
 import TutorPanel from './pages/TutorPanel';
+import TeachingMaterials from './pages/TeachingMaterials';
 
 // Protected Route Wrapper Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -48,7 +49,15 @@ const AppLayout = ({ children }) => {
           </Link>
 
           {user && (
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4">
+              {(user.role === 'coordinator' || user.role === 'school_admin' || user.role === 'tutor') && (
+                <Link
+                  to="/materials"
+                  className="hidden sm:inline-flex items-center rounded border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-700 hover:bg-slate-100"
+                >
+                  Materials
+                </Link>
+              )}
               <div className="hidden sm:block text-right">
                 <p className="text-sm font-medium text-slate-800">{user.name}</p>
                 <p className="text-xs text-slate-400 capitalize mt-0.5">
@@ -158,6 +167,16 @@ function App() {
               <ProtectedRoute allowedRoles={['parent']}>
                 <AppLayout>
                   <ConsentForm />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/materials"
+            element={
+              <ProtectedRoute allowedRoles={['coordinator', 'school_admin', 'tutor']}>
+                <AppLayout>
+                  <TeachingMaterials />
                 </AppLayout>
               </ProtectedRoute>
             }
