@@ -1,4 +1,5 @@
 const { Student, User, SessionLog, WeekendCheckIn, Consent, SessionGuide } = require('../models');
+const { suggestTutorsForStudent } = require('../utils/tutorMatching');
 
 // ========================================================
 // Users Management
@@ -144,6 +145,52 @@ exports.createStudent = async (req, res) => {
     });
 
     res.status(201).json(student);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Suggest tutors automatically based on learning gap and tutor quality
+exports.suggestTutorsForStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const student = await Student.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    const tutors = await User.find({ role: 'tutor' });
+    const logs = await SessionLog.find({});
+
+    const workloadMap = {};
+    const studentAssignments = await Student.find({ tutorId: { $ne: null } });
+    studentAssignments.forEach((entry) => {
+      if (!entry.tutorId) return;
+      const id = String(entry.tutorId);
+      workloadMap[id] = (workloadMap[id] || 0) + 1;
+    });
+
+    const rankedTutors = suggestTutorsForStudent(student, tutors, logs, workloadMap);
+    const topMatches = rankedTutors.slice(0, 5).map((match) => ({
+      tutor: {
+        id: match.tutor._id,
+        name: match.tutor.name,
+        tutorStatus: match.tutor.tutorStatus || 'active',
+        expertise: match.tutor.expertise || []
+      },
+      score: match.score,
+      subject: match.subject,
+      level: match.level,
+      reasons: match.reason
+    }));
+
+    res.json({
+      studentId,
+      subject: topMatches[0]?.subject || 'reading',
+      level: topMatches[0]?.level || 'Beginner',
+      suggestions: topMatches
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

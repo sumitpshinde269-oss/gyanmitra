@@ -43,6 +43,12 @@ router.post(
   restrictTo('coordinator', 'school_admin'),
   appController.createStudent
 );
+router.get(
+  '/students/:studentId/suggest-tutors',
+  protect,
+  restrictTo('coordinator', 'school_admin'),
+  appController.suggestTutorsForStudent
+);
 router.patch(
   '/students/:studentId/assign',
   protect,
