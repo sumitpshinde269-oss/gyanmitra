@@ -3,27 +3,49 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const getDashboardRoute = (role) => {
+    switch (role) {
+      case 'coordinator':
+      case 'school_admin':
+        return '/coordinator';
+      case 'tutor':
+        return '/tutor';
+      case 'parent':
+        return '/check-in';
+      default:
+        return '/login';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
-      setError('Please enter username and password');
+
+    if (!email.trim() || !password.trim()) {
+      setError('Please enter both your email and password.');
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setError('Please enter a valid email address.');
       return;
     }
 
     try {
       setError('');
       setSubmitting(true);
-      await login(username, password);
-      navigate('/');
+      const user = await login(email, password);
+      const redirectPath = getDashboardRoute(user?.role);
+      navigate(redirectPath, { replace: true });
     } catch (err) {
-      setError(err);
+      setError(err || 'Unable to sign in. Please check your credentials and try again.');
     } finally {
       setSubmitting(false);
     }
@@ -33,10 +55,11 @@ function Login() {
     try {
       setError('');
       setSubmitting(true);
-      await login(demoUsername, 'password123');
-      navigate('/');
+      const user = await login(demoUsername, 'password123');
+      const redirectPath = getDashboardRoute(user?.role);
+      navigate(redirectPath, { replace: true });
     } catch (err) {
-      setError(err);
+      setError(err || 'Unable to sign in with the demo account.');
     } finally {
       setSubmitting(false);
     }
@@ -53,7 +76,7 @@ function Login() {
 
         {error && (
           <div className="bg-red-50 text-red-700 text-xs p-3 rounded mb-6 border border-red-200">
-            Error: {error}
+            {error}
           </div>
         )}
 
@@ -61,13 +84,13 @@ function Login() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-              Username
+              Email
             </label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter username"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
               className="w-full px-4 py-3 border border-slate-200 rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-950 text-sm placeholder:text-slate-300"
             />
           </div>
