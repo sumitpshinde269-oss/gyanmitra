@@ -163,7 +163,7 @@ async function ensureDemoUser(User, hashedPassword, spec) {
 }
 
 async function seedDatabase() {
-  const { User, Student, Consent, SessionGuide } = require('./models');
+  const { User, Student, Consent, SessionGuide, TeachingMaterial } = require('./models');
 
   console.log('Running GyanMitra seed...');
 
@@ -237,6 +237,52 @@ async function seedDatabase() {
       parentSignatureText: 'Rajesh Kumar'
     });
     console.log('  ✓ Created signed consent for Aarav Kumar');
+  }
+
+  const defaultMaterials = [
+    {
+      title: 'Grade 3 Reading Lesson Plan: Word Families',
+      type: 'lesson_plan',
+      subject: 'reading',
+      grade: 'Grade 3',
+      description: 'Short, structured reading lesson with warm-up, practice, and exit task.',
+      content: '1. Warm-up: sound matching round.\n2. Teach: short word families (at, an, in).\n3. Practice: read 8 words aloud.\n4. Assessment: ask student to read 5 words without help.\n5. Wrap-up: ask one comprehension question.'
+    },
+    {
+      title: 'Grade 4 Math Worksheet: Addition and Subtraction',
+      type: 'worksheet',
+      subject: 'math',
+      grade: 'Grade 4',
+      description: 'Practice sheet with simple addition and subtraction problems.',
+      content: 'A. 12 + 5 = ___\nB. 18 - 7 = ___\nC. 25 + 10 = ___\nD. 30 - 12 = ___\nE. 9 + 8 = ___'
+    },
+    {
+      title: 'Assessment Template: Reading Fluency Check',
+      type: 'assessment',
+      subject: 'reading',
+      grade: 'Grade 5',
+      description: 'Quick fluency assessment checklist for tutors.',
+      content: 'Student reads aloud 3 short sentences.\n- Accuracy: ___/10\n- Confidence: 1-5\n- Hesitation issues: ___\n- Comprehension question: ___\n- Next action: ___'
+    },
+    {
+      title: 'Teaching Tip: Use Praise and Slow Correction',
+      type: 'teaching_tip',
+      subject: 'general',
+      grade: 'All grades',
+      description: 'Simple teaching reminder to keep sessions calm and encouraging.',
+      content: 'Give one clear instruction at a time. Praise effort before correction. If the student struggles, model once, then let them try again. Keep the pace slow and positive.'
+    }
+  ];
+
+  const existingMaterials = await TeachingMaterial.find({});
+  if (existingMaterials.length === 0) {
+    for (const item of defaultMaterials) {
+      await TeachingMaterial.create({
+        ...item,
+        createdBy: coordinator._id
+      });
+    }
+    console.log('  ✓ Seeded teaching materials library');
   }
 
   console.log('Seed complete. Demo logins (password: ' + DEMO_PASSWORD + '):');

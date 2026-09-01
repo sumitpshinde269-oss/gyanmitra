@@ -86,6 +86,16 @@ const sessionGuideSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
+const teachingMaterialSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  type: { type: String, required: true, enum: ['lesson_plan', 'worksheet', 'assessment', 'teaching_tip'] },
+  subject: { type: String, required: true, enum: ['reading', 'math', 'general'] },
+  grade: { type: String, required: true },
+  description: { type: String, default: '' },
+  content: { type: String, default: '' },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+}, { timestamps: true });
+
 sessionGuideSchema.index({ subject: 1, level: 1 }, { unique: true });
 
 const MongoUser = mongoose.model('User', userSchema);
@@ -94,6 +104,7 @@ const MongoSessionLog = mongoose.model('SessionLog', sessionLogSchema);
 const MongoWeekendCheckIn = mongoose.model('WeekendCheckIn', weekendCheckInSchema);
 const MongoConsent = mongoose.model('Consent', consentSchema);
 const MongoSessionGuide = mongoose.model('SessionGuide', sessionGuideSchema);
+const MongoTeachingMaterial = mongoose.model('TeachingMaterial', teachingMaterialSchema);
 
 // ----------------------------------------------------
 // 2. Query Builder Mock for Populating (For Mock mode)
@@ -292,5 +303,6 @@ module.exports = {
   SessionLog: createModelWrapper('sessionLogs', MongoSessionLog),
   WeekendCheckIn: createModelWrapper('weekendCheckIns', MongoWeekendCheckIn),
   Consent: createModelWrapper('consents', MongoConsent),
-  SessionGuide: createModelWrapper('sessionGuides', MongoSessionGuide)
+  SessionGuide: createModelWrapper('sessionGuides', MongoSessionGuide),
+  TeachingMaterial: createModelWrapper('teachingMaterials', MongoTeachingMaterial)
 };

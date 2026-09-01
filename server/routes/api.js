@@ -112,6 +112,17 @@ router.put(
 );
 
 // ----------------------------------------------------
+// Teaching Materials Library
+// ----------------------------------------------------
+router.get('/teaching-materials', protect, appController.getTeachingMaterials);
+router.post(
+  '/teaching-materials',
+  protect,
+  restrictTo('coordinator', 'school_admin'),
+  appController.createTeachingMaterial
+);
+
+// ----------------------------------------------------
 // Coordinator Dashboard Stats
 // ----------------------------------------------------
 router.get(

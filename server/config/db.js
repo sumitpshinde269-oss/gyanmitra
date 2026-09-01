@@ -17,7 +17,8 @@ function initMockDB() {
       sessionLogs: [],
       weekendCheckIns: [],
       consents: [],
-      sessionGuides: []
+      sessionGuides: [],
+      teachingMaterials: []
     }, null, 2));
     console.log('Initialized mock JSON database at', dbFilePath);
   }

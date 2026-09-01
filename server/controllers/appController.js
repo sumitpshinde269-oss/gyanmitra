@@ -1,4 +1,4 @@
-const { Student, User, SessionLog, WeekendCheckIn, Consent, SessionGuide } = require('../models');
+const { Student, User, SessionLog, WeekendCheckIn, Consent, SessionGuide, TeachingMaterial } = require('../models');
 const { suggestTutorsForStudent } = require('../utils/tutorMatching');
 
 // ========================================================
@@ -458,6 +458,61 @@ exports.updateSessionGuide = async (req, res) => {
 // ========================================================
 // Dashboard Statistics (Coordinators)
 // ========================================================
+
+// ========================================================
+// Teaching Materials Library
+// ========================================================
+
+exports.getTeachingMaterials = async (req, res) => {
+  try {
+    const { type, grade, subject } = req.query;
+    const query = {};
+
+    if (type) query.type = type;
+    if (grade) query.grade = grade;
+    if (subject) query.subject = subject;
+
+    const materials = await TeachingMaterial.find(query).sort({ createdAt: -1 });
+    res.json(materials);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createTeachingMaterial = async (req, res) => {
+  try {
+    const { title, type, grade, subject, description, content } = req.body;
+
+    if (!title || !type || !grade || !subject || !content) {
+      return res.status(400).json({ error: 'Title, type, grade, subject, and content are required.' });
+    }
+
+    const allowedTypes = ['lesson_plan', 'worksheet', 'assessment', 'teaching_tip'];
+    const allowedSubjects = ['reading', 'math', 'general'];
+
+    if (!allowedTypes.includes(type)) {
+      return res.status(400).json({ error: 'Invalid material type.' });
+    }
+
+    if (!allowedSubjects.includes(subject)) {
+      return res.status(400).json({ error: 'Invalid subject.' });
+    }
+
+    const material = await TeachingMaterial.create({
+      title: String(title).trim(),
+      type,
+      grade: String(grade).trim(),
+      subject,
+      description: String(description || '').trim(),
+      content: String(content).trim(),
+      createdBy: req.user.id
+    });
+
+    res.status(201).json(material);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 exports.getStats = async (req, res) => {
   try {
