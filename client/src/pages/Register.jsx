@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 const initialForm = {
   name: '',
@@ -25,6 +26,7 @@ function Register() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');
+  const { t, language, setLanguage, supportedLanguages } = useLanguage();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -40,23 +42,23 @@ function Register() {
     const nextErrors = {};
 
     if (!formData.name.trim()) {
-      nextErrors.name = 'Name is required.';
+      nextErrors.name = `${t('name')} is required.`;
     }
 
     if (!formData.email.trim()) {
-      nextErrors.email = 'Email is required.';
+      nextErrors.email = `${t('email')} is required.`;
     } else if (!validateEmail(formData.email)) {
-      nextErrors.email = 'Please enter a valid email address.';
+      nextErrors.email = t('validEmail');
     }
 
     if (!formData.password) {
-      nextErrors.password = 'Password is required.';
+      nextErrors.password = `${t('password')} is required.`;
     } else if (!validatePassword(formData.password)) {
-      nextErrors.password = 'Password must be at least 8 characters and include letters, numbers, and a special character.';
+      nextErrors.password = t('passwordHint');
     }
 
     if (!formData.role) {
-      nextErrors.role = 'Please select a role.';
+      nextErrors.role = `${t('role')} is required.`;
     }
 
     setErrors(nextErrors);
@@ -99,9 +101,25 @@ function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50/50 px-4 py-10">
       <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mb-4 flex justify-end">
+          <label className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+            <span>{t('language')}</span>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-700 outline-none"
+              aria-label={t('selectLanguage')}
+            >
+              {supportedLanguages.map((item) => (
+                <option key={item.code} value={item.code}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Create account</h1>
-          <p className="mt-2 text-sm text-slate-500">Join GyanMitra as a member</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('createAccount')}</h1>
+          <p className="mt-2 text-sm text-slate-500">{t('joinApp')}</p>
         </div>
 
         {apiError && (
@@ -113,7 +131,7 @@ function Register() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Name
+              {t('name')}
             </label>
             <input
               type="text"
@@ -121,14 +139,14 @@ function Register() {
               value={formData.name}
               onChange={handleChange}
               className="w-full rounded border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
-              placeholder="Enter your full name"
+              placeholder={t('registerName')}
             />
             {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
           </div>
 
           <div>
             <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Email
+              {t('email')}
             </label>
             <input
               type="email"
@@ -136,14 +154,14 @@ function Register() {
               value={formData.email}
               onChange={handleChange}
               className="w-full rounded border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
-              placeholder="you@example.com"
+              placeholder={t('registerEmail')}
             />
             {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
           </div>
 
           <div>
             <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Password
+              {t('password')}
             </label>
             <input
               type="password"
@@ -151,14 +169,14 @@ function Register() {
               value={formData.password}
               onChange={handleChange}
               className="w-full rounded border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
-              placeholder="Enter a strong password"
+              placeholder={t('registerPassword')}
             />
             {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
           </div>
 
           <div>
             <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Role
+              {t('role')}
             </label>
             <select
               name="role"
@@ -166,9 +184,9 @@ function Register() {
               onChange={handleChange}
               className="w-full rounded border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
             >
-              <option value="coordinator">Coordinator</option>
-              <option value="tutor">Tutor</option>
-              <option value="parent">Parent</option>
+              <option value="coordinator">{t('coordinator')}</option>
+              <option value="tutor">{t('tutor')}</option>
+              <option value="parent">{t('parent')}</option>
             </select>
             {errors.role && <p className="mt-1 text-xs text-red-600">{errors.role}</p>}
           </div>
@@ -178,18 +196,18 @@ function Register() {
             disabled={submitting}
             className="w-full rounded bg-slate-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? 'Registering...' : 'Register'}
+            {submitting ? t('registering') : t('register')}
           </button>
         </form>
 
         <p className="mt-6 text-center text-xs text-slate-500">
-          Already have an account?{' '}
+          {t('alreadyHaveAccount')}{' '}
           <button
             type="button"
             onClick={() => navigate('/login')}
             className="font-semibold text-slate-900 underline underline-offset-2"
           >
-            Sign in
+            {t('signInLink')}
           </button>
         </p>
       </div>

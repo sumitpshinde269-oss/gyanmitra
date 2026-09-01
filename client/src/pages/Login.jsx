@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ function Login() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
+  const { t, language, setLanguage, supportedLanguages } = useLanguage();
   const navigate = useNavigate();
 
   const getDashboardRoute = (role) => {
@@ -28,13 +30,13 @@ function Login() {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
-      setError('Please enter both your email and password.');
+      setError(t('enterCredentials'));
       return;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
-      setError('Please enter a valid email address.');
+      setError(t('validEmail'));
       return;
     }
 
@@ -45,7 +47,7 @@ function Login() {
       const redirectPath = getDashboardRoute(user?.role);
       navigate(redirectPath, { replace: true });
     } catch (err) {
-      setError(err || 'Unable to sign in. Please check your credentials and try again.');
+      setError(err || t('loginError'));
     } finally {
       setSubmitting(false);
     }
@@ -68,10 +70,25 @@ function Login() {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center p-6 bg-slate-50/50">
       <div className="max-w-md w-full bg-white border border-slate-200 p-8 sm:p-10 rounded shadow-sm animate-scale-in">
-        {/* Header */}
+        <div className="flex justify-end mb-4">
+          <label className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+            <span>{t('language')}</span>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-700 outline-none"
+              aria-label={t('selectLanguage')}
+            >
+              {supportedLanguages.map((item) => (
+                <option key={item.code} value={item.code}>{item.label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
         <div className="text-center mb-8">
-          <h1 className="text-lg font-bold tracking-tight text-slate-900">GYANMITRA</h1>
-          <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest font-semibold">Village Peer-Tutoring Portal</p>
+          <h1 className="text-lg font-bold tracking-tight text-slate-900">{t('appTitle')}</h1>
+          <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest font-semibold">{t('portalSubtitle')}</p>
         </div>
 
         {error && (
@@ -84,25 +101,25 @@ function Login() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-              Email
+              {t('email')}
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
+              placeholder={t('loginEmail')}
               className="w-full px-4 py-3 border border-slate-200 rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-950 text-sm placeholder:text-slate-300"
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-              Password
+              {t('password')}
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder={t('enterPassword')}
               className="w-full px-4 py-3 border border-slate-200 rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-950 text-sm placeholder:text-slate-300"
             />
           </div>
@@ -111,19 +128,19 @@ function Login() {
             disabled={submitting}
             className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded transition duration-200 disabled:opacity-50 text-xs uppercase tracking-wider"
           >
-            {submitting ? 'Signing in...' : 'Sign In'}
+            {submitting ? t('signingIn') : t('signIn')}
           </button>
         </form>
 
         <div className="mt-5 text-center">
           <p className="text-xs text-slate-500">
-            Don&apos;t have an account?{' '}
+            {t('noAccount')}{' '}
             <button
               type="button"
               onClick={() => navigate('/register')}
               className="font-semibold text-slate-900 underline underline-offset-2"
             >
-              Create one
+              {t('createOne')}
             </button>
           </p>
         </div>
@@ -135,7 +152,7 @@ function Login() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-white px-4 text-slate-400 font-semibold tracking-widest text-[9px]">
-              Quick Demo Access
+              {t('quickDemoAccess')}
             </span>
           </div>
         </div>
@@ -148,10 +165,10 @@ function Login() {
             className="flex items-center justify-between bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 px-4 py-3.5 rounded transition duration-150 text-left disabled:opacity-50"
           >
             <div>
-              <p className="text-sm font-semibold text-slate-850">Coordinator Portal</p>
-              <p className="text-xs text-slate-400 mt-0.5">Amit Patel (Manage & Level-Up)</p>
+              <p className="text-sm font-semibold text-slate-850">{t('coordinatorPortal')}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t('demoCoordinator')}</p>
             </div>
-            <span className="text-[10px] border border-slate-200 text-slate-500 px-2.5 py-1 rounded font-semibold uppercase tracking-wider bg-slate-50">Try</span>
+            <span className="text-[10px] border border-slate-200 text-slate-500 px-2.5 py-1 rounded font-semibold uppercase tracking-wider bg-slate-50">{t('tryDemo')}</span>
           </button>
 
           <button
@@ -160,10 +177,10 @@ function Login() {
             className="flex items-center justify-between bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 px-4 py-3.5 rounded transition duration-150 text-left disabled:opacity-50"
           >
             <div>
-              <p className="text-sm font-semibold text-slate-850">Tutor Panel</p>
-              <p className="text-xs text-slate-400 mt-0.5">Priya Sharma (Senior Student)</p>
+              <p className="text-sm font-semibold text-slate-850">{t('tutorPanel')}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t('demoTutor')}</p>
             </div>
-            <span className="text-[10px] border border-slate-200 text-slate-500 px-2.5 py-1 rounded font-semibold uppercase tracking-wider bg-slate-50">Try</span>
+            <span className="text-[10px] border border-slate-200 text-slate-500 px-2.5 py-1 rounded font-semibold uppercase tracking-wider bg-slate-50">{t('tryDemo')}</span>
           </button>
 
           <button
@@ -172,10 +189,10 @@ function Login() {
             className="flex items-center justify-between bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 px-4 py-3.5 rounded transition duration-150 text-left disabled:opacity-50"
           >
             <div>
-              <p className="text-sm font-semibold text-slate-850">Parent Check-in</p>
-              <p className="text-xs text-slate-400 mt-0.5">Rajesh Kumar (Consent & Quiz)</p>
+              <p className="text-sm font-semibold text-slate-850">{t('parentCheckIn')}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t('demoParent')}</p>
             </div>
-            <span className="text-[10px] border border-slate-200 text-slate-500 px-2.5 py-1 rounded font-semibold uppercase tracking-wider bg-slate-50">Try</span>
+            <span className="text-[10px] border border-slate-200 text-slate-500 px-2.5 py-1 rounded font-semibold uppercase tracking-wider bg-slate-50">{t('tryDemo')}</span>
           </button>
         </div>
       </div>

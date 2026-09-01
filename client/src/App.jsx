@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ConsentForm from './pages/ConsentForm';
@@ -36,26 +37,39 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 // Base App Layout Component
 const AppLayout = ({ children }) => {
   const { user, logout } = useAuth();
+  const { language, setLanguage, supportedLanguages, t } = useLanguage();
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50">
-      {/* Top Header Navigation */}
       <header className="bg-white border-b border-slate-200 text-slate-900 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center gap-4">
           <Link to="/" className="flex items-center">
             <span className="text-lg font-bold tracking-tight text-slate-900 hover:text-slate-700 transition-colors">
-              GYANMITRA
+              {t('appTitle')}
             </span>
           </Link>
 
           {user && (
             <div className="flex items-center space-x-4">
+              <label className="hidden sm:flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+                <span>{t('language')}</span>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-700 outline-none"
+                  aria-label={t('selectLanguage')}
+                >
+                  {supportedLanguages.map((item) => (
+                    <option key={item.code} value={item.code}>{item.label}</option>
+                  ))}
+                </select>
+              </label>
               {(user.role === 'coordinator' || user.role === 'school_admin' || user.role === 'tutor') && (
                 <Link
                   to="/materials"
                   className="hidden sm:inline-flex items-center rounded border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-700 hover:bg-slate-100"
                 >
-                  Materials
+                  {t('materials')}
                 </Link>
               )}
               <div className="hidden sm:block text-right">
@@ -68,22 +82,20 @@ const AppLayout = ({ children }) => {
                 onClick={logout}
                 className="bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 transition px-4 py-2 rounded border border-slate-300 text-xs font-medium"
               >
-                Logout
+                {t('logout')}
               </button>
             </div>
           )}
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="flex-grow max-w-5xl w-full mx-auto px-6 py-8 pb-24">
         {children}
       </main>
 
-      {/* Bottom Footer Accent */}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400">
         <div className="max-w-5xl mx-auto px-6 flex justify-between items-center text-slate-500">
-          <span>Peer-Tutoring Portal</span>
+          <span>{t('portalSubtitle')}</span>
           <span>Village Schools Initiative</span>
         </div>
       </footer>
@@ -123,71 +135,70 @@ const HomeRedirect = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+    <LanguageProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          {/* Protected Application Routes */}
-          <Route
-            path="/coordinator"
-            element={
-              <ProtectedRoute allowedRoles={['coordinator', 'school_admin']}>
-                <AppLayout>
-                  <CoordinatorDashboard />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/tutor"
-            element={
-              <ProtectedRoute allowedRoles={['tutor']}>
-                <AppLayout>
-                  <TutorPanel />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/check-in"
-            element={
-              <ProtectedRoute allowedRoles={['parent']}>
-                <AppLayout>
-                  <ParentCheckIn />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/consent"
-            element={
-              <ProtectedRoute allowedRoles={['parent']}>
-                <AppLayout>
-                  <ConsentForm />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/materials"
-            element={
-              <ProtectedRoute allowedRoles={['coordinator', 'school_admin', 'tutor']}>
-                <AppLayout>
-                  <TeachingMaterials />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/coordinator"
+              element={
+                <ProtectedRoute allowedRoles={['coordinator', 'school_admin']}>
+                  <AppLayout>
+                    <CoordinatorDashboard />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tutor"
+              element={
+                <ProtectedRoute allowedRoles={['tutor']}>
+                  <AppLayout>
+                    <TutorPanel />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/check-in"
+              element={
+                <ProtectedRoute allowedRoles={['parent']}>
+                  <AppLayout>
+                    <ParentCheckIn />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/consent"
+              element={
+                <ProtectedRoute allowedRoles={['parent']}>
+                  <AppLayout>
+                    <ConsentForm />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/materials"
+              element={
+                <ProtectedRoute allowedRoles={['coordinator', 'school_admin', 'tutor']}>
+                  <AppLayout>
+                    <TeachingMaterials />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Home Dispatcher / Fallback */}
-          <Route path="/" element={<HomeRedirect />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+            <Route path="/" element={<HomeRedirect />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 
